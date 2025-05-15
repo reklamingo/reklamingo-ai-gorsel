@@ -43,23 +43,26 @@ function CanvasEditor() {
         <div
           ref={previewRef}
           className="preview-box"
-          style={{
-            width: size.width,
-            height: size.height,
-background: backgroundType === 'color'
-  ? bgColor
-  : backgroundType === 'gradient'
-  ? bgGradient
-  : bgImage
-  ? `url(${URL.createObjectURL(bgImage)})`
-  : '#fff',
-
-            backgroundSize: 'cover',
-            border: ${frame.thickness}px solid ${frame.color},
-            padding: frame.padding,
-            boxSizing: 'border-box',
-            fontFamily: 'Quicksand',
-          }}
+          <div
+  ref={previewRef}
+  className="preview-box"
+  style={{
+    width: size.width,
+    height: size.height,
+    background:
+      backgroundType === 'color'
+        ? bgColor
+        : backgroundType === 'gradient'
+        ? bgGradient
+        : bgImage
+        ? `url(${URL.createObjectURL(bgImage)})`
+        : '#fff',
+    backgroundSize: 'cover',
+    border: `${frame.thickness}px solid ${frame.color}`,
+    padding: frame.padding,
+    boxSizing: 'border-box',
+    fontFamily: 'Quicksand',
+  }}
         >
           <h1 style={{ ...titleStyle }} contentEditable>{title}</h1>
           <p style={{ ...bodyStyle }} contentEditable>{body}</p>
