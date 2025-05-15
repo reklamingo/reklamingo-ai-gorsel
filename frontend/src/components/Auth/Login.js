@@ -10,7 +10,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://your-backend-url.com/login', { email, password });
+      const res = await axios.post('https://reklamingo-ai-gorsel.onrender.com', { email, password });
       localStorage.setItem('token', res.data.token);
       navigate('/');
     } catch (err) {
