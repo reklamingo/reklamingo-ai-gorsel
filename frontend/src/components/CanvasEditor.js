@@ -46,9 +46,14 @@ function CanvasEditor() {
           style={{
             width: size.width,
             height: size.height,
-            background: backgroundType === 'color' ? bgColor :
-                        backgroundType === 'gradient' ? bgGradient :
-                        bgImage ? url(${URL.createObjectURL(bgImage)}) : '#fff',
+background: backgroundType === 'color'
+  ? bgColor
+  : backgroundType === 'gradient'
+  ? bgGradient
+  : bgImage
+  ? `url(${URL.createObjectURL(bgImage)})`
+  : '#fff',
+
             backgroundSize: 'cover',
             border: ${frame.thickness}px solid ${frame.color},
             padding: frame.padding,
