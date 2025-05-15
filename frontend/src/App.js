@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CanvasEditor from './components/CanvasEditor';
+import CanvasEditorV2 from './components/CanvasEditorV2';
+<Route path="/" element={<CanvasEditorV2 />} />
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import './main.css';
