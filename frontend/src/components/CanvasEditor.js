@@ -38,12 +38,7 @@ function CanvasEditor() {
   };
 
   return (
-    <div className="editor-wrapper">
-      <div className="preview-area" style={{ width: size.width / 3, height: size.height / 3 }}>
-        <div
-          ref={previewRef}
-          className="preview-box"
-          <div
+    <div
   ref={previewRef}
   className="preview-box"
   style={{
@@ -63,7 +58,7 @@ function CanvasEditor() {
     boxSizing: 'border-box',
     fontFamily: 'Quicksand',
   }}
-        >
+>
           <h1 style={{ ...titleStyle }} contentEditable>{title}</h1>
           <p style={{ ...bodyStyle }} contentEditable>{body}</p>
         </div>
