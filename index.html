@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reklamingo Görsel Oluşturucu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary: #003e92;
+      --accent: #3ecf00;
+    }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .draggable {
+      position: absolute;
+      cursor: move;
+    }
+    .frame {
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <!-- Başlık -->
+  <h1 class="text-2xl font-bold text-[var(--primary)] mb-4">Reklamingo Görsel Oluşturucu</h1>
+
+  <!-- Boyut Seçimi -->
+  <div class="mb-4 flex gap-2">
+    <select id="canvasSize" class="p-2 rounded border border-gray-300">
+      <option value="1080x1080">Kare (1080x1080)</option>
+      <option value="1080x1350">3:4 (1080x1350)</option>
+      <option value="1080x1440">4:3 (1080x1440)</option>
+      <option value="1080x1920">9:16 (1080x1920)</option>
+    </select>
+    <button onclick="setCanvasSize()" class="bg-[var(--primary)] text-white px-4 py-2 rounded">Uygula</button>
+  </div>
+
+  <!-- Canvas Alanı -->
+  <div id="canvas" class="relative bg-white shadow-xl" style="width: 1080px; height: 1080px;">
+    <div id="frame" class="frame"></div>
+  </div>
+
+  <!-- Kontroller -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 w-full max-w-6xl">
+    <!-- Arka Plan Seçimi -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Arka Plan</h2>
+      <input type="color" id="bgColor" value="#ffffff" class="w-full mb-2" onchange="updateBgColor()" />
+      <input type="file" accept="image/*" onchange="uploadBackground(event)" class="w-full" />
+    </div>
+
+    <!-- Metin Ekleme -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Metin</h2>
+      <input type="text" id="textInput" placeholder="Başlık / Metin" class="w-full p-2 mb-2 border border-gray-300 rounded" />
+      <div class="flex gap-2 mb-2">
+        <select id="fontFamily" class="w-1/2">
+          <option value="Quicksand">Quicksand</option>
+          <option value="Arial">Arial</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+        <input type="number" id="fontSize" placeholder="Boyut" class="w-1/2" value="32" />
+      </div>
+      <div class="flex gap-2 mb-2">
+        <button onclick="styleType='bold'" class="font-bold border px-2">B</button>
+        <button onclick="styleType='italic'" class="italic border px-2">I</button>
+        <button onclick="textAlign='left'" class="border px-2">⬅️</button>
+        <button onclick="textAlign='center'" class="border px-2">↔️</button>
+        <button onclick="textAlign='right'" class="border px-2">➡️</button>
+      </div>
+      <button onclick="addTextElement()" class="bg-[var(--accent)] text-white w-full py-1 rounded">Metin Ekle</button>
+    </div>
+
+    <!-- Logo Ekleme -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Logo / İsim</h2>
+      <input type="file" accept="image/*" onchange="uploadLogo(event)" class="w-full mb-2" />
+      <input type="text" id="brandName" placeholder="Marka İsmi" class="w-full p-2 mb-2 border border-gray-300 rounded" />
+      <button onclick="addBrandName()" class="bg-[var(--accent)] text-white w-full py-1 rounded">Yazılı Logo Ekle</button>
+    </div>
+
+    <!-- Çerçeve Ayarları -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Çerçeve</h2>
+      <input type="color" id="frameColor" value="#003e92" class="w-full mb-2" />
+      <input type="range" id="frameWidth" min="0" max="50" value="10" class="w-full mb-2" />
+      <input type="range" id="framePadding" min="0" max="50" value="10" class="w-full mb-2" />
+      <button onclick="updateFrame()" class="bg-[var(--primary)] text-white w-full py-1 rounded">Çerçeve Güncelle</button>
+    </div>
+
+    <!-- PNG İndir -->
+    <div class="col-span-full">
+      <button onclick="downloadImage()" class="bg-[var(--primary)] hover:bg-[var(--accent)] text-white font-semibold w-full py-3 rounded mt-4">Tasarımı PNG Olarak İndir</button>
+    </div>
+  </div>
+
+  <script>
+    let styleType = 'normal';
+    let textAlign = 'center';
+
+    function setCanvasSize() {
+      const size = document.getElementById("canvasSize").value.split("x");
+      const canvas = document.getElementById("canvas");
+      canvas.style.width = size[0] + "px";
+      canvas.style.height = size[1] + "px";
+    }
+
+    function updateBgColor() {
+      const color = document.getElementById("bgColor").value;
+      document.getElementById("canvas").style.backgroundColor = color;
+    }
+
+    function uploadBackground(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("canvas").style.backgroundImage = `url('${reader.result}')`;
+        document.getElementById("canvas").style.backgroundSize = 'cover';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addTextElement() {
+      const text = document.getElementById("textInput").value;
+      const font = document.getElementById("fontFamily").value;
+      const size = document.getElementById("fontSize").value;
+      const div = document.createElement("div");
+      div.className = "draggable";
+      div.contentEditable = true;
+      div.innerText = text;
+      div.style.fontFamily = font;
+      div.style.fontSize = size + "px";
+      div.style.textAlign = textAlign;
+      div.style.fontWeight = styleType === 'bold' ? 'bold' : 'normal';
+      div.style.fontStyle = styleType === 'italic' ? 'italic' : 'normal';
+      div.style.left = "50px";
+      div.style.top = "50px";
+      dragElement(div);
+      document.getElementById("canvas").appendChild(div);
+    }
+
+    function uploadLogo(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = document.createElement("img");
+        img.src = reader.result;
+        img.style.maxWidth = "200px";
+        img.className = "draggable";
+        img.style.left = "50px";
+        img.style.top = "50px";
+        dragElement(img);
+        document.getElementById("canvas").appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addBrandName() {
+      document.getElementById("textInput").value = document.getElementById("brandName").value;
+      addTextElement();
+    }
+
+    function updateFrame() {
+      const frame = document.getElementById("frame");
+      const color = document.getElementById("frameColor").value;
+      const width = document.getElementById("frameWidth").value + "px";
+      const padding = document.getElementById("framePadding").value + "px";
+      frame.style.border = `${width} solid ${color}`;
+      frame.style.padding = padding;
+    }
+
+    function dragElement(el) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      el.onmousedown = dragMouseDown;
+
+      function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+
+    function downloadImage() {
+      html2canvas(document.getElementById("canvas")).then(function(canvas) {
+        const link = document.createElement("a");
+        link.download = "tasarim.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
