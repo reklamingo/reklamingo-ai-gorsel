@@ -11,7 +11,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://your-backend-url.com/register', { email, username, password });
+      await axios.post('https://reklamingo-ai-gorsel.onrender.com', { email, username, password });
       alert('Kayıt başarılı. Lütfen e-posta adresinizi doğrulayın.');
       navigate('/giris');
     } catch (err) {
