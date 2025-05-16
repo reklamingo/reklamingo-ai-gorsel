@@ -6,8 +6,9 @@ import Draggable from 'react-draggable';
 import './App.css';
 
 const App = () => {
-  // [state tanımları aynı kalacak]
-  // [giriş ve kod kontrol kısmı aynı kalacak]
+  const [accessGranted, setAccessGranted] = useState(false);
+  const [inputCode, setInputCode] = useState('');
+  // diğer useState'ler...
 
   if (!accessGranted) {
     return (
