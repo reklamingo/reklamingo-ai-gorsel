@@ -1,0 +1,10 @@
+body {
+  font-family: 'Quicksand', sans-serif;
+}
+.editor-container {
+  background-color: #f8f9fa;
+}
+.canvas-area {
+  background-color: white;
+  overflow: hidden;
+}
