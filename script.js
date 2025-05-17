@@ -1,215 +1,235 @@
-const canvas = document.getElementById('canvas');
-let dragItem = null;
+// CanvasEditorV2 - script.js
+
+const canvas = document.getElementById("canvas");
+let selectedElement = null;
 let boldActive = false;
 let italicActive = false;
 
-const colorOptions = [
-  '#ffffff', '#000000', '#ff0000', '#00ff00',
-  '#0000ff', '#ffcc00', '#ff00ff', '#00ffff',
-  '#888888', '#3ecf00', '#003e92'
+// Hazır renkler
+const colors = [
+  "#ffffff", "#000000", "#ff0000", "#00ff00", "#0000ff",
+  "#ffcc00", "#ff00ff", "#00ffff", "#3ecf00", "#003e92"
 ];
 
-const gradientOptions = [
-  'linear-gradient(45deg, #ff7e5f, #feb47b)',
-  'linear-gradient(45deg, #6a11cb, #2575fc)',
-  'linear-gradient(45deg, #fc466b, #3f5efb)',
-  'linear-gradient(45deg, #00c6ff, #0072ff)',
-  'linear-gradient(45deg, #f7971e, #ffd200)',
-  'linear-gradient(45deg, #eecda3, #ef629f)',
-  'linear-gradient(45deg, #43cea2, #185a9d)',
-  'linear-gradient(45deg, #f953c6, #b91d73)'
+const gradients = [
+  "linear-gradient(45deg, #ff7e5f, #feb47b)",
+  "linear-gradient(45deg, #6a11cb, #2575fc)",
+  "linear-gradient(45deg, #fc466b, #3f5efb)",
+  "linear-gradient(45deg, #00c6ff, #0072ff)",
+  "linear-gradient(45deg, #f7971e, #ffd200)",
+  "linear-gradient(45deg, #eecda3, #ef629f)",
+  "linear-gradient(45deg, #43cea2, #185a9d)",
+  "linear-gradient(45deg, #f953c6, #b91d73)"
 ];
 
-// ---------- BOYUT SEÇİMİ ----------
-document.getElementById('sizeSelect').addEventListener('change', function () {
-  const value = this.value;
-  if (value === 'custom') {
-    document.getElementById('customSize').classList.remove('hidden');
-  } else {
-    document.getElementById('customSize').classList.add('hidden');
-    const [w, h] = value.split('x');
-    canvas.style.width = `${w}px`;
-    canvas.style.height = `${h}px`;
-  }
-});
+function initPalettes() {
+  const colorPalette = document.getElementById("colorPalette");
+  const gradientPalette = document.getElementById("gradientPalette");
+
+  colors.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "color-box";
+    div.style.background = c;
+    div.onclick = () => {
+      canvas.style.background = c;
+      canvas.style.filter = getBgFilter();
+    };
+    colorPalette.appendChild(div);
+  });
+
+  gradients.forEach(g => {
+    const div = document.createElement("div");
+    div.className = "gradient-box";
+    div.style.background = g;
+    div.onclick = () => {
+      canvas.style.background = g;
+      canvas.style.filter = getBgFilter();
+    };
+    gradientPalette.appendChild(div);
+  });
+
+  document.getElementById("bgOpacity").oninput = updateBgFilter;
+  document.getElementById("bgBlur").oninput = updateBgFilter;
+}
+
+function getBgFilter() {
+  const opacity = document.getElementById("bgOpacity").value;
+  const blur = document.getElementById("bgBlur").value;
+  canvas.style.opacity = opacity / 100;
+  return `blur(${blur}px)`;
+}
+
+function updateBgFilter() {
+  canvas.style.filter = getBgFilter();
+}
 
 function applyCustomSize() {
-  const w = document.getElementById('customWidth').value;
-  const h = document.getElementById('customHeight').value;
+  const w = document.getElementById("customWidth").value;
+  const h = document.getElementById("customHeight").value;
   canvas.style.width = `${w}px`;
   canvas.style.height = `${h}px`;
 }
 
-// ---------- ARKA PLAN ----------
-function setBackgroundColor(color) {
-  canvas.style.background = color;
-  canvas.style.backgroundImage = '';
-}
+document.getElementById("sizeSelect").onchange = function () {
+  const value = this.value;
+  document.getElementById("customSize").classList.toggle("hidden", value !== "custom");
+  if (value !== "custom") {
+    const [w, h] = value.split("x");
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+  }
+};
 
 function uploadBackground(e) {
   const file = e.target.files[0];
   const reader = new FileReader();
-  reader.onload = function (event) {
+  reader.onload = event => {
     canvas.style.backgroundImage = `url(${event.target.result})`;
-    canvas.style.backgroundSize = 'cover';
-    canvas.style.backgroundPosition = 'center';
+    canvas.style.backgroundSize = "cover";
   };
   reader.readAsDataURL(file);
 }
 
-// ---------- LOGO / İSİM ----------
+function addElement(content, isText = true) {
+  const el = document.createElement("div");
+  el.className = "canvas-item";
+  el.contentEditable = isText;
+  el.style.top = "60px";
+  el.style.left = "60px";
+  el.style.position = "absolute";
+  el.style.resize = "both";
+  el.style.overflow = "hidden";
+  el.style.minWidth = "40px";
+  el.style.minHeight = "40px";
+  el.style.padding = "4px";
+  el.style.border = "1px dashed transparent";
+  if (isText) el.innerText = content;
+  else el.appendChild(content);
+
+  el.onclick = () => selectElement(el);
+  canvas.appendChild(el);
+  selectElement(el);
+}
+
+function addText() {
+  const text = document.getElementById("textInput").value;
+  addElement(text);
+}
+
 function uploadLogo(e) {
   const file = e.target.files[0];
   const reader = new FileReader();
-  reader.onload = function (event) {
-    const img = document.createElement('img');
+  reader.onload = event => {
+    const img = document.createElement("img");
     img.src = event.target.result;
-    img.style.width = '120px';
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'canvas-item';
-    wrapper.style.top = '40px';
-    wrapper.style.left = '40px';
-    wrapper.appendChild(img);
-
-    makeInteractive(wrapper);
-    canvas.appendChild(wrapper);
+    img.style.width = "100px";
+    addElement(img, false);
   };
   reader.readAsDataURL(file);
 }
 
 function addNameAsLogo() {
-  const name = document.getElementById('nameText').value.trim();
-  if (!name) return;
-  const div = document.createElement('div');
-  div.className = 'canvas-item';
-  div.style.top = '50px';
-  div.style.left = '50px';
-  div.style.fontSize = '32px';
-  div.style.fontWeight = 'bold';
-  div.style.color = '#003e92';
-  div.textContent = name;
-  makeInteractive(div);
-  canvas.appendChild(div);
+  const text = document.getElementById("nameAsLogo").value;
+  if (text) addElement(text);
 }
 
-// ---------- METİN EKLEME ----------
-function toggleBold() {
-  boldActive = !boldActive;
-  document.getElementById('boldBtn').classList.toggle('active', boldActive);
+function selectElement(el) {
+  selectedElement = el;
+  const panel = document.getElementById("editPanel");
+  panel.classList.remove("hidden");
+  document.getElementById("editContent").value = el.innerText || "";
+  document.getElementById("editColor").value = rgb2hex(el.style.color || "#000000");
+  document.getElementById("editSize").value = parseInt(el.style.fontSize) || 24;
 }
 
-function toggleItalic() {
-  italicActive = !italicActive;
-  document.getElementById('italicBtn').classList.toggle('active', italicActive);
+function rgb2hex(rgb) {
+  const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
+  return result ?
+    "#" + result.slice(1).map(x => ("0" + parseInt(x).toString(16)).slice(-2)).join("") : rgb;
 }
 
-function addText() {
-  const value = document.getElementById('textInput').value;
-  const font = document.getElementById('fontSelect').value;
-  const size = document.getElementById('fontSize').value;
-  const color = document.getElementById('fontColor').value;
+document.getElementById("editContent").oninput = e => {
+  if (selectedElement) selectedElement.innerText = e.target.value;
+};
+document.getElementById("editColor").oninput = e => {
+  if (selectedElement) selectedElement.style.color = e.target.value;
+};
+document.getElementById("editSize").oninput = e => {
+  if (selectedElement) selectedElement.style.fontSize = `${e.target.value}px`;
+};
 
-  const div = document.createElement('div');
-  div.className = 'canvas-item';
-  div.textContent = value;
-  div.style.top = '60px';
-  div.style.left = '60px';
-  div.style.fontFamily = font;
-  div.style.fontSize = size;
-  div.style.color = color;
-  div.style.fontWeight = boldActive ? 'bold' : 'normal';
-  div.style.fontStyle = italicActive ? 'italic' : 'normal';
+function alignItem(direction) {
+  if (!selectedElement) return;
+  const parentWidth = canvas.offsetWidth;
+  const parentHeight = canvas.offsetHeight;
+  const elWidth = selectedElement.offsetWidth;
+  const elHeight = selectedElement.offsetHeight;
 
-  makeInteractive(div);
-  canvas.appendChild(div);
+  if (direction === "center") {
+    selectedElement.style.left = `${(parentWidth - elWidth) / 2}px`;
+  } else if (direction === "left") {
+    selectedElement.style.left = "0px";
+  } else if (direction === "right") {
+    selectedElement.style.left = `${parentWidth - elWidth}px`;
+  }
 }
 
-// ---------- ÇERÇEVE ----------
+function deleteSelected() {
+  if (selectedElement) {
+    canvas.removeChild(selectedElement);
+    selectedElement = null;
+    document.getElementById("editPanel").classList.add("hidden");
+  }
+}
+
 function addFrame() {
-  const color = document.getElementById('frameColor').value;
-  const frame = document.createElement('div');
-  frame.className = 'frame-border';
+  const color = document.getElementById("frameColor").value;
+  const frame = document.createElement("div");
+  frame.className = "frame-border";
   frame.style.borderColor = color;
   canvas.appendChild(frame);
 }
 
-// ---------- SÜRÜKLEME / SİLME ----------
-function makeInteractive(el) {
-  el.setAttribute('draggable', true);
-  el.addEventListener('dragstart', dragStart);
-  el.addEventListener('dblclick', () => {
-    if (confirm("Bu öğeyi silmek istiyor musunuz?")) {
-      el.remove();
-    }
-  });
-  el.addEventListener('touchstart', touchStart, { passive: false });
-  el.addEventListener('touchmove', touchMove, { passive: false });
-}
-
-function dragStart(e) {
-  dragItem = e.target;
-  e.dataTransfer.setData('text/plain', '');
-}
-
-canvas.addEventListener('dragover', (e) => e.preventDefault());
-
-canvas.addEventListener('drop', (e) => {
-  e.preventDefault();
-  if (dragItem) {
-    const rect = canvas.getBoundingClientRect();
-    dragItem.style.left = `${e.clientX - rect.left - dragItem.offsetWidth / 2}px`;
-    dragItem.style.top = `${e.clientY - rect.top - dragItem.offsetHeight / 2}px`;
-  }
-});
-
-function touchStart(e) {
-  dragItem = e.target;
-}
-
-function touchMove(e) {
-  if (dragItem) {
-    const rect = canvas.getBoundingClientRect();
-    dragItem.style.left = `${e.touches[0].clientX - rect.left - dragItem.offsetWidth / 2}px`;
-    dragItem.style.top = `${e.touches[0].clientY - rect.top - dragItem.offsetHeight / 2}px`;
+function applyTemplate(type) {
+  canvas.innerHTML = "";
+  if (type === "indirim") {
+    addElement("%50 İndirim!");
+  } else if (type === "etkinlik") {
+    addElement("Canlı Etkinlik Bu Akşam!");
+  } else if (type === "urun") {
+    addElement("Yeni Ürün: CanvasPro V2");
   }
 }
 
-// ---------- PNG OLARAK KAYDET ----------
 function downloadImage() {
-  html2canvas(canvas).then((canvasExport) => {
-    const link = document.createElement('a');
-    link.download = 'tasarim.png';
+  html2canvas(canvas).then(canvasExport => {
+    const link = document.createElement("a");
+    link.download = "tasarim.png";
     link.href = canvasExport.toDataURL();
     link.click();
   });
 }
 
-// ---------- RENK PALETİ OLUŞTUR ----------
-function createColorPalette() {
-  const palette = document.getElementById('colorPalette');
-  colorOptions.forEach(color => {
-    const box = document.createElement('div');
-    box.className = 'color-box';
-    box.style.background = color;
-    box.onclick = () => setBackgroundColor(color);
-    palette.appendChild(box);
+// Başlatıcı
+window.onload = () => {
+  initPalettes();
+  const fontSelect = document.getElementById("fontFamily");
+  const editFont = document.getElementById("editFont");
+  const fonts = ["Quicksand", "Arial", "Montserrat", "Roboto", "Georgia"];
+  fonts.forEach(f => {
+    const opt1 = document.createElement("option");
+    opt1.value = f;
+    opt1.innerText = f;
+    fontSelect.appendChild(opt1);
+    const opt2 = opt1.cloneNode(true);
+    editFont.appendChild(opt2);
   });
-}
 
-function createGradientPalette() {
-  const palette = document.getElementById('gradientPalette');
-  gradientOptions.forEach(gradient => {
-    const box = document.createElement('div');
-    box.className = 'gradient-box';
-    box.style.background = gradient;
-    box.onclick = () => {
-      canvas.style.background = gradient;
-    };
-    palette.appendChild(box);
+  const sizeSelect = document.getElementById("fontSize");
+  [24, 32, 40, 48, 60, 72].forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = `${s}px`;
+    opt.innerText = s;
+    sizeSelect.appendChild(opt);
   });
-}
-
-// ---------- BAŞLAT ----------
-createColorPalette();
-createGradientPalette();
+};
