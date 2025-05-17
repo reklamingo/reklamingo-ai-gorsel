@@ -2,100 +2,78 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CanvasEditor V2.2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CanvasEditor V2.3</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
   <header>
-    <h1><i class="fa-solid fa-pen-nib"></i> CanvasEditor V2.2</h1>
+    <h1><i class="fa-solid fa-pen-nib"></i> CanvasEditor V2.3</h1>
   </header>
 
-  <main class="layout">
-    <aside class="sidebar">
-      <section>
-        <h2>Ebat Seçimi</h2>
-        <select id="sizeSelect">
-          <option value="1080x1080">Kare (1080x1080)</option>
-          <option value="1080x1350">Dikey (1080x1350)</option>
-          <option value="1080x1920">Hikaye (1080x1920)</option>
-          <option value="1200x628">Yatay (1200x628)</option>
-          <option value="custom">Özel</option>
-        </select>
-        <div id="customSize" class="hidden">
-          <input type="number" id="customWidth" placeholder="Genişlik (px)" />
-          <input type="number" id="customHeight" placeholder="Yükseklik (px)" />
-          <button onclick="applyCustomSize()">Uygula</button>
-        </div>
-      </section>
-
-      <section>
-        <h2>Arka Plan</h2>
-        <div id="colorPalette"></div>
-        <div id="gradientPalette"></div>
-        <label>Opaklık</label>
+  <div class="main-container">
+    <div class="tab-panel">
+      <div class="tab-buttons">
+        <button class="active" onclick="showTab('backgroundTab')">🎨</button>
+        <button onclick="showTab('textTab')">✍️</button>
+        <button onclick="showTab('logoTab')">🖼️</button>
+        <button onclick="showTab('frameTab')">🧩</button>
+      </div>
+      <div class="tab-content" id="backgroundTab">
+        <h3>Arka Plan</h3>
+        <div class="palette-wrapper" id="colorPalette"></div>
+        <div class="palette-wrapper" id="gradientPalette"></div>
         <input type="range" id="bgOpacity" min="0" max="100" value="100" />
-        <label>Blur</label>
         <input type="range" id="bgBlur" min="0" max="20" value="0" />
-        <label>Görsel Yükle</label>
         <input type="file" accept="image/*" onchange="uploadBackground(event)" />
-      </section>
-
-      <section>
-        <h2>Logo</h2>
-        <input type="file" accept="image/*" onchange="uploadLogo(event)" />
-        <input type="text" id="nameAsLogo" placeholder="Logo yerine metin..." />
-        <button onclick="addNameAsLogo()">Metni Logo Olarak Ekle</button>
-      </section>
-
-      <section>
-        <h2>Metin</h2>
+      </div>
+      <div class="tab-content" id="textTab" style="display:none">
+        <h3>Metin</h3>
         <input type="text" id="textInput" placeholder="Metin yazın" />
         <select id="fontFamily"></select>
         <select id="fontSize"></select>
         <input type="color" id="fontColor" value="#000000" />
         <div class="style-buttons">
-          <button onclick="boldActive = !boldActive;" title="Kalın"><i class="fa-solid fa-bold"></i></button>
-          <button onclick="italicActive = !italicActive;" title="İtalik"><i class="fa-solid fa-italic"></i></button>
+          <button onclick="boldActive = !boldActive;"><i class="fa-solid fa-bold"></i></button>
+          <button onclick="italicActive = !italicActive;"><i class="fa-solid fa-italic"></i></button>
         </div>
         <button onclick="addText()">Metni Ekle</button>
-      </section>
-
-      <section>
-        <h2>Çerçeve</h2>
+      </div>
+      <div class="tab-content" id="logoTab" style="display:none">
+        <h3>Logo</h3>
+        <input type="file" accept="image/*" onchange="uploadLogo(event)" />
+        <input type="text" id="nameAsLogo" placeholder="Logo yerine metin..." />
+        <button onclick="addNameAsLogo()">Metni Logo Olarak Ekle</button>
+      </div>
+      <div class="tab-content" id="frameTab" style="display:none">
+        <h3>Çerçeve</h3>
         <input type="color" id="frameColor" />
         <button onclick="addFrame()">Çerçeve Ekle</button>
-      </section>
-
-      <section>
-        <button onclick="downloadImage()"><i class="fa-solid fa-download"></i> PNG Olarak İndir</button>
-      </section>
-    </aside>
-
-    <section class="canvas-area">
-      <div id="canvas" class="canvas-content"></div>
-    </section>
-  </main>
-
-  <div id="editPanel" class="hidden">
-    <h3>Öğe Ayarları</h3>
-    <label>İçerik</label>
-    <input type="text" id="editContent" />
-    <label>Renk</label>
-    <input type="color" id="editColor" />
-    <label>Boyut</label>
-    <input type="range" id="editSize" min="12" max="100" />
-    <div class="align-buttons">
-      <button onclick="alignItem('left')"><i class="fa-solid fa-align-left"></i></button>
-      <button onclick="alignItem('center')"><i class="fa-solid fa-align-center"></i></button>
-      <button onclick="alignItem('right')"><i class="fa-solid fa-align-right"></i></button>
+        <hr />
+        <button onclick="downloadImage()">PNG Olarak İndir</button>
+      </div>
     </div>
-    <button onclick="deleteSelected()">Sil</button>
+
+    <div class="canvas-wrapper">
+      <div id="canvas" style="width:1080px; height:1080px;"></div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    CanvasEditor v2.3 - Herkes için güçlü ve kolay tasarım deneyimi ✨
   </div>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script src="script.js"></script>
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+  </script>
 </body>
 </html>
