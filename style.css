@@ -1,192 +1,212 @@
-/* CanvasEditor V4.1 - style.css */
+// CanvasEditor V4.1 - script.js (Güncellenmiş)
 
-:root {
-  --primary: #003e92;
-  --accent: #3ecf00;
-  --light: #ffffff;
-  --gray: #f1f3f5;
-  --border: #dee2e6;
-  --font: 'Quicksand', sans-serif;
+const canvas = document.getElementById("canvas");
+let selectedElement = null;
+let boldActive = false;
+let italicActive = false;
+
+function setSize(w, h) {
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: var(--font);
-  margin: 0;
-  padding: 0;
+function uploadBackground(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = event => {
+    canvas.style.backgroundImage = `url(${event.target.result})`;
+    canvas.style.backgroundSize = "cover";
+    canvas.style.backgroundPosition = "center";
+    canvas.style.filter = getBgFilter();
+  };
+  reader.readAsDataURL(file);
+  canvas.style.backgroundColor = "";
 }
 
-body, html {
-  width: 100%;
-  height: 100vh;
-  background: var(--gray);
-  overflow: hidden;
+function getBgFilter() {
+  const blur = document.getElementById("bgBlur").value;
+  return `blur(${blur}px)`;
 }
 
-.editor-wrapper {
-  display: flex;
-  height: 100vh;
+function updateBgFilter() {
+  canvas.style.filter = getBgFilter();
+  canvas.style.opacity = document.getElementById("bgOpacity").value / 100;
 }
 
-.editor-sidebar {
-  width: 320px;
-  background: var(--light);
-  padding: 20px;
-  overflow-y: auto;
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+document.getElementById("bgOpacity").oninput = updateBgFilter;
+document.getElementById("bgBlur").oninput = updateBgFilter;
+document.getElementById("bgColor").oninput = function () {
+  canvas.style.backgroundColor = this.value;
+  canvas.style.backgroundImage = "none";
+};
+
+function addText() {
+  const text = document.getElementById("textInput").value;
+  if (!text.trim()) return;
+  const el = document.createElement("div");
+  el.innerText = text;
+  el.className = "canvas-item";
+  el.contentEditable = true;
+  el.style.top = "50px";
+  el.style.left = "50px";
+  el.style.position = "absolute";
+  el.style.fontSize = document.getElementById("fontSize").value || "24px";
+  el.style.fontFamily = document.getElementById("fontFamily").value || "Quicksand";
+  el.style.color = document.getElementById("fontColor").value;
+  el.style.fontWeight = boldActive ? "bold" : "normal";
+  el.style.fontStyle = italicActive ? "italic" : "normal";
+  makeDraggable(el);
+  el.onclick = () => selectElement(el);
+  canvas.appendChild(el);
+  selectElement(el);
 }
 
-.sidebar-header {
-  font-size: 20px;
-  font-weight: bold;
-  color: var(--primary);
-  margin-bottom: 10px;
+function uploadLogo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = event => {
+    const img = document.createElement("img");
+    img.src = event.target.result;
+    img.className = "canvas-item";
+    img.style.top = "60px";
+    img.style.left = "60px";
+    img.style.width = "120px";
+    img.style.height = "auto";
+    img.style.position = "absolute";
+    img.style.resize = "both";
+    img.style.overflow = "hidden";
+    img.draggable = false;
+    makeDraggable(img);
+    img.onclick = () => selectElement(img);
+    canvas.appendChild(img);
+    selectElement(img);
+  };
+  reader.readAsDataURL(file);
 }
 
-.tool-group h3 {
-  font-size: 14px;
-  margin-bottom: 6px;
-  color: var(--primary);
+function selectElement(el) {
+  selectedElement = el;
+  document.getElementById("editPanel").classList.remove("hidden");
+  if (el.tagName === "DIV") {
+    document.getElementById("editContent").value = el.innerText;
+    document.getElementById("editColor").value = rgbToHex(el.style.color);
+    document.getElementById("editSize").value = parseInt(el.style.fontSize);
+    document.getElementById("fontFamily").value = el.style.fontFamily || "Quicksand";
+    document.getElementById("fontSize").value = el.style.fontSize || "24px";
+    document.getElementById("fontColor").value = el.style.color;
+  }
 }
 
-.tool-group input,
-.tool-group select {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  font-size: 14px;
+function deleteSelected() {
+  if (selectedElement) {
+    canvas.removeChild(selectedElement);
+    selectedElement = null;
+    document.getElementById("editPanel").classList.add("hidden");
+  }
 }
 
-.tool-group button {
-  background: var(--primary);
-  color: var(--light);
-  font-weight: bold;
-  border: none;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 4px;
-  transition: background 0.2s ease;
+function alignItem(direction) {
+  if (!selectedElement) return;
+  if (direction === "left") selectedElement.style.textAlign = "left";
+  if (direction === "center") selectedElement.style.textAlign = "center";
+  if (direction === "right") selectedElement.style.textAlign = "right";
 }
 
-.tool-group button:hover {
-  background: #002866;
+function toggleBold() {
+  boldActive = !boldActive;
+  document.querySelector(".style-buttons button:nth-child(1)").classList.toggle("active");
+  if (selectedElement && selectedElement.tagName === "DIV") {
+    selectedElement.style.fontWeight = boldActive ? "bold" : "normal";
+  }
 }
 
-.style-buttons {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+function toggleItalic() {
+  italicActive = !italicActive;
+  document.querySelector(".style-buttons button:nth-child(2)").classList.toggle("active");
+  if (selectedElement && selectedElement.tagName === "DIV") {
+    selectedElement.style.fontStyle = italicActive ? "italic" : "normal";
+  }
 }
 
-.style-buttons button {
-  flex: 1;
-  padding: 8px;
-  font-weight: bold;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: #f8f9fa;
-  color: var(--primary);
-  cursor: pointer;
+document.getElementById("editContent").oninput = function () {
+  if (selectedElement && selectedElement.tagName === "DIV") {
+    selectedElement.innerText = this.value;
+  }
+};
+
+document.getElementById("editColor").oninput = function () {
+  if (selectedElement) {
+    selectedElement.style.color = this.value;
+  }
+};
+
+document.getElementById("editSize").oninput = function () {
+  if (selectedElement) {
+    selectedElement.style.fontSize = this.value + "px";
+  }
+};
+
+function downloadImage() {
+  html2canvas(canvas).then(canvasExport => {
+    const link = document.createElement("a");
+    link.download = "tasarim.png";
+    link.href = canvasExport.toDataURL();
+    link.click();
+  });
 }
 
-.style-buttons button:hover,
-.style-buttons button.active {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
+function clearCanvas() {
+  canvas.innerHTML = "";
+  canvas.style.backgroundImage = "none";
+  canvas.style.backgroundColor = document.getElementById("bgColor").value || "#ffffff";
+  document.getElementById("editPanel").classList.add("hidden");
 }
 
-.palette-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
+function rgbToHex(rgb) {
+  const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
+  return result ?
+    "#" + result.slice(1).map(x => (+x).toString(16).padStart(2, "0")).join("") : rgb;
 }
 
-.palette-wrapper button {
-  width: 30px;
-  height: 30px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  outline: 1px solid #ccc;
-  transition: transform 0.2s;
-}
+window.onload = () => {
+  const fontSelect = document.getElementById("fontFamily");
+  ["Quicksand", "Arial", "Montserrat", "Roboto", "Georgia"].forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f;
+    opt.innerText = f;
+    fontSelect.appendChild(opt);
+  });
 
-.palette-wrapper button:hover {
-  transform: scale(1.1);
-}
+  const sizeSelect = document.getElementById("fontSize");
+  [16, 20, 24, 32, 40, 48, 60].forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = `${s}px`;
+    opt.innerText = s + " px";
+    sizeSelect.appendChild(opt);
+  });
 
-.editor-canvas-area {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f9f9f9;
-  padding: 20px;
-}
-
-.editor-canvas {
-  width: 1080px;
-  height: 1080px;
-  background: var(--light);
-  border: 2px dashed var(--primary);
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.canvas-item {
-  position: absolute;
-  resize: both;
-  overflow: auto;
-  padding: 4px;
-  cursor: move;
-  z-index: 10;
-}
-
-.edit-panel {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 260px;
-  background: var(--light);
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-  padding: 16px;
-  z-index: 999;
-}
-
-.edit-panel.hidden {
-  display: none;
-}
-
-.edit-panel input,
-.edit-panel label,
-.edit-panel button {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.align-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.align-buttons button {
-  flex: 1;
-  padding: 8px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+  const gradientPalette = document.getElementById("gradientPalette");
+  const gradients = [
+    "linear-gradient(45deg, #ff7e5f, #feb47b)",
+    "linear-gradient(45deg, #6a11cb, #2575fc)",
+    "linear-gradient(45deg, #fc466b, #3f5efb)",
+    "linear-gradient(45deg, #00c6ff, #0072ff)",
+    "linear-gradient(45deg, #f7971e, #ffd200)",
+    "linear-gradient(45deg, #eecda3, #ef629f)",
+    "linear-gradient(45deg, #43cea2, #185a9d)",
+    "linear-gradient(45deg, #f953c6, #b91d73)"
+  ];
+  gradients.forEach(g => {
+    const btn = document.createElement("button");
+    btn.style.background = g;
+    btn.onclick = () => {
+      canvas.style.backgroundImage = g;
+      canvas.style.backgroundSize = "cover";
+      canvas.style.backgroundPosition = "center";
+      canvas.style.filter = getBgFilter();
+    };
+    gradientPalette.appendChild(btn);
+  });
+};
