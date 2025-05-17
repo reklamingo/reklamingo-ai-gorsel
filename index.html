@@ -2,28 +2,28 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CanvasEditor Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CanvasEditorV2</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
   <header>
-    <h1><i class="fa-solid fa-paintbrush"></i> Sosyal Medya Görsel Tasarım Editörü</h1>
+    <h1><i class="fa-solid fa-pen-nib"></i> CanvasEditor V2</h1>
   </header>
 
-  <main>
-    <aside class="panel">
-      <!-- EBAT SEÇİMİ -->
+  <main class="layout">
+    <!-- SOL PANEL -->
+    <aside class="sidebar">
       <section>
-        <h2>Ebat Seç</h2>
+        <h2>Boyut</h2>
         <select id="sizeSelect">
           <option value="1080x1080">Kare (1080x1080)</option>
           <option value="1080x1350">Dikey (1080x1350)</option>
           <option value="1080x1920">Hikaye (1080x1920)</option>
           <option value="1200x628">Yatay (1200x628)</option>
-          <option value="custom">Özel Boyut</option>
+          <option value="custom">Özel</option>
         </select>
         <div id="customSize" class="hidden">
           <input type="number" id="customWidth" placeholder="Genişlik (px)" />
@@ -32,78 +32,79 @@
         </div>
       </section>
 
-      <!-- ARKA PLAN -->
       <section>
         <h2>Arka Plan</h2>
-        <label>Renk Seç</label>
         <div id="colorPalette"></div>
-
-        <label>Gradyan Seç</label>
         <div id="gradientPalette"></div>
-
-        <label>Görsel Yükle</label>
+        <input type="range" id="bgOpacity" min="0" max="100" value="100" />
+        <input type="range" id="bgBlur" min="0" max="20" value="0" />
         <input type="file" accept="image/*" onchange="uploadBackground(event)" />
       </section>
 
-      <!-- LOGO -->
       <section>
         <h2>Logo</h2>
-        <label>Logo Yükle</label>
         <input type="file" accept="image/*" onchange="uploadLogo(event)" />
-        <label>Veya Adınızı Girin</label>
-        <input type="text" id="nameText" placeholder="Örn: @markanız" />
-        <button onclick="addNameAsLogo()">İsmi Ekle</button>
+        <input type="text" id="nameAsLogo" placeholder="Logo yerine metin..." />
+        <button onclick="addNameAsLogo()">Metni Logo Olarak Ekle</button>
       </section>
 
-      <!-- METİN -->
       <section>
         <h2>Metin</h2>
-        <input type="text" id="textInput" placeholder="Metin girin..." />
-        <div class="font-controls">
-          <select id="fontSelect">
-            <option value="Quicksand">Quicksand</option>
-            <option value="Arial">Arial</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Comic Sans MS">Comic Sans</option>
-          </select>
-          <select id="fontSize">
-            <option value="24px">24</option>
-            <option value="32px">32</option>
-            <option value="40px">40</option>
-            <option value="48px">48</option>
-            <option value="60px">60</option>
-            <option value="72px">72</option>
-          </select>
-        </div>
-        <div class="style-controls">
-          <button id="boldBtn" onclick="toggleBold()" title="Kalın"><i class="fa-solid fa-bold"></i></button>
-          <button id="italicBtn" onclick="toggleItalic()" title="İtalik"><i class="fa-solid fa-italic"></i></button>
-          <input type="color" id="fontColor" title="Renk Seç" />
+        <input type="text" id="textInput" placeholder="Metin yazın" />
+        <select id="fontFamily"></select>
+        <select id="fontSize"></select>
+        <input type="color" id="fontColor" value="#000000" />
+        <div class="style-buttons">
+          <button onclick="toggleBold()" id="boldBtn"><i class="fa-solid fa-bold"></i></button>
+          <button onclick="toggleItalic()" id="italicBtn"><i class="fa-solid fa-italic"></i></button>
         </div>
         <button onclick="addText()">Metni Ekle</button>
       </section>
 
-      <!-- ÇERÇEVE -->
       <section>
         <h2>Çerçeve</h2>
-        <input type="color" id="frameColor" value="#000000" />
+        <input type="color" id="frameColor" />
         <button onclick="addFrame()">Çerçeve Ekle</button>
       </section>
 
-      <!-- İNDİR -->
       <section>
-        <button onclick="downloadImage()"><i class="fa-solid fa-download"></i> PNG İndir</button>
+        <h2>Hazır Şablonlar</h2>
+        <button onclick="applyTemplate('indirim')"><i class="fa-solid fa-tag"></i> İndirim</button>
+        <button onclick="applyTemplate('etkinlik')"><i class="fa-solid fa-calendar"></i> Etkinlik</button>
+        <button onclick="applyTemplate('urun')"><i class="fa-solid fa-box"></i> Ürün Tanıtımı</button>
+      </section>
+
+      <section>
+        <button onclick="downloadImage()"><i class="fa-solid fa-download"></i> PNG Olarak İndir</button>
       </section>
     </aside>
 
-    <section class="canvas-container">
+    <!-- CANVAS ALANI -->
+    <section class="canvas-area">
       <div id="canvas" class="canvas-content">
-        <!-- Dinamik öğeler burada oluşacak -->
+        <!-- Öğeler buraya gelecek -->
       </div>
     </section>
   </main>
+
+  <!-- Seçilen öğe düzenleme paneli -->
+  <div id="editPanel" class="hidden">
+    <h3>Öğe Ayarları</h3>
+    <label>Metin</label>
+    <input type="text" id="editContent" />
+    <label>Renk</label>
+    <input type="color" id="editColor" />
+    <label>Font</label>
+    <select id="editFont"></select>
+    <label>Boyut</label>
+    <input type="range" id="editSize" min="12" max="100" />
+    <div class="align-buttons">
+      <button onclick="alignItem('left')"><i class="fa-solid fa-align-left"></i></button>
+      <button onclick="alignItem('center')"><i class="fa-solid fa-align-center"></i></button>
+      <button onclick="alignItem('right')"><i class="fa-solid fa-align-right"></i></button>
+    </div>
+    <button onclick="deleteSelected()">Sil</button>
+  </div>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script src="script.js"></script>
