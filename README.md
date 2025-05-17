@@ -1,10 +1,10 @@
 # CanvasEditor V4
 
-Quicksand fontlu, lacivert-yeşil temalı, sürükle-bırak destekli görsel oluşturma uygulaması.
+Render uyumlu, PNG çıktılı, arka plan efektli görsel oluşturma uygulaması.
 
-## Başlatmak için:
-
+## Geliştirme
 ```bash
 npm install
+npm run build
 npm start
 ```

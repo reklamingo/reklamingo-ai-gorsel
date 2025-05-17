@@ -1,3 +1,4 @@
+
 // CanvasEditorV4 - Başlangıç dosyası
 // Kurulum: create-react-app ya da Vite ile yapılabilir
 // Bu dosya App.js olacak şekilde hazırlanmıştır
@@ -108,6 +109,7 @@ function App() {
           backgroundImage: bgType === 'image' ? `url(${bgImage})` : undefined,
           backgroundSize: 'cover',
           filter: bgBlur ? 'blur(3px)' : 'none',
+          position: 'relative'
         }}
       >
         {texts.map(t => (
