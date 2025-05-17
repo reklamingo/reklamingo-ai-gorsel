@@ -1,16 +1,11 @@
-// CanvasEditorV2 - script.js
+// CanvasEditorV2.1 - script.js (Geliştirilmiş)
 
 const canvas = document.getElementById("canvas");
 let selectedElement = null;
 let boldActive = false;
 let italicActive = false;
 
-// Hazır renkler
-const colors = [
-  "#ffffff", "#000000", "#ff0000", "#00ff00", "#0000ff",
-  "#ffcc00", "#ff00ff", "#00ffff", "#3ecf00", "#003e92"
-];
-
+const colors = ["#ffffff", "#000000", "#ff0000", "#00ff00", "#0000ff", "#ffcc00", "#ff00ff", "#00ffff", "#3ecf00", "#003e92"];
 const gradients = [
   "linear-gradient(45deg, #ff7e5f, #feb47b)",
   "linear-gradient(45deg, #6a11cb, #2575fc)",
@@ -30,6 +25,7 @@ function initPalettes() {
     const div = document.createElement("div");
     div.className = "color-box";
     div.style.background = c;
+    div.title = c;
     div.onclick = () => {
       canvas.style.background = c;
       canvas.style.filter = getBgFilter();
@@ -41,6 +37,7 @@ function initPalettes() {
     const div = document.createElement("div");
     div.className = "gradient-box";
     div.style.background = g;
+    div.title = "Gradyan";
     div.onclick = () => {
       canvas.style.background = g;
       canvas.style.filter = getBgFilter();
@@ -53,14 +50,13 @@ function initPalettes() {
 }
 
 function getBgFilter() {
-  const opacity = document.getElementById("bgOpacity").value;
   const blur = document.getElementById("bgBlur").value;
-  canvas.style.opacity = opacity / 100;
   return `blur(${blur}px)`;
 }
 
 function updateBgFilter() {
   canvas.style.filter = getBgFilter();
+  canvas.style.opacity = document.getElementById("bgOpacity").value / 100;
 }
 
 function applyCustomSize() {
@@ -86,6 +82,7 @@ function uploadBackground(e) {
   reader.onload = event => {
     canvas.style.backgroundImage = `url(${event.target.result})`;
     canvas.style.backgroundSize = "cover";
+    canvas.style.backgroundPosition = "center";
   };
   reader.readAsDataURL(file);
 }
@@ -98,15 +95,17 @@ function addElement(content, isText = true) {
   el.style.left = "60px";
   el.style.position = "absolute";
   el.style.resize = "both";
-  el.style.overflow = "hidden";
+  el.style.overflow = "auto";
   el.style.minWidth = "40px";
   el.style.minHeight = "40px";
   el.style.padding = "4px";
   el.style.border = "1px dashed transparent";
+  el.style.zIndex = "10";
   if (isText) el.innerText = content;
   else el.appendChild(content);
 
   el.onclick = () => selectElement(el);
+  el.ondblclick = e => e.stopPropagation();
   canvas.appendChild(el);
   selectElement(el);
 }
@@ -123,6 +122,8 @@ function uploadLogo(e) {
     const img = document.createElement("img");
     img.src = event.target.result;
     img.style.width = "100px";
+    img.style.display = "block";
+    img.style.pointerEvents = "none";
     addElement(img, false);
   };
   reader.readAsDataURL(file);
@@ -190,17 +191,6 @@ function addFrame() {
   canvas.appendChild(frame);
 }
 
-function applyTemplate(type) {
-  canvas.innerHTML = "";
-  if (type === "indirim") {
-    addElement("%50 İndirim!");
-  } else if (type === "etkinlik") {
-    addElement("Canlı Etkinlik Bu Akşam!");
-  } else if (type === "urun") {
-    addElement("Yeni Ürün: CanvasPro V2");
-  }
-}
-
 function downloadImage() {
   html2canvas(canvas).then(canvasExport => {
     const link = document.createElement("a");
@@ -210,7 +200,6 @@ function downloadImage() {
   });
 }
 
-// Başlatıcı
 window.onload = () => {
   initPalettes();
   const fontSelect = document.getElementById("fontFamily");
