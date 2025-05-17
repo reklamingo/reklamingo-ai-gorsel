@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CanvasEditor V2.1</title>
+  <title>CanvasEditor V2.2</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
   <header>
-    <h1><i class="fa-solid fa-pen-nib"></i> CanvasEditor V2.1</h1>
+    <h1><i class="fa-solid fa-pen-nib"></i> CanvasEditor V2.2</h1>
   </header>
 
   <main class="layout">
-    <!-- Sol Panel -->
     <aside class="sidebar">
       <section>
         <h2>Ebat Seçimi</h2>
@@ -34,12 +33,11 @@
 
       <section>
         <h2>Arka Plan</h2>
-        <small>Renk veya görsel seçebilirsiniz</small>
         <div id="colorPalette"></div>
         <div id="gradientPalette"></div>
         <label>Opaklık</label>
         <input type="range" id="bgOpacity" min="0" max="100" value="100" />
-        <label>Blur (bulanıklık)</label>
+        <label>Blur</label>
         <input type="range" id="bgBlur" min="0" max="20" value="0" />
         <label>Görsel Yükle</label>
         <input type="file" accept="image/*" onchange="uploadBackground(event)" />
@@ -47,7 +45,6 @@
 
       <section>
         <h2>Logo</h2>
-        <small>Marka logonuzu ekleyin ya da isminizi yazın</small>
         <input type="file" accept="image/*" onchange="uploadLogo(event)" />
         <input type="text" id="nameAsLogo" placeholder="Logo yerine metin..." />
         <button onclick="addNameAsLogo()">Metni Logo Olarak Ekle</button>
@@ -77,15 +74,11 @@
       </section>
     </aside>
 
-    <!-- Canvas Alanı -->
     <section class="canvas-area">
-      <div id="canvas" class="canvas-content">
-        <!-- Öğeler buraya eklenecek -->
-      </div>
+      <div id="canvas" class="canvas-content"></div>
     </section>
   </main>
 
-  <!-- Öğe Düzenleme Paneli -->
   <div id="editPanel" class="hidden">
     <h3>Öğe Ayarları</h3>
     <label>İçerik</label>
@@ -95,9 +88,9 @@
     <label>Boyut</label>
     <input type="range" id="editSize" min="12" max="100" />
     <div class="align-buttons">
-      <button onclick="alignItem('left')" title="Sola hizala"><i class="fa-solid fa-align-left"></i></button>
-      <button onclick="alignItem('center')" title="Ortala"><i class="fa-solid fa-align-center"></i></button>
-      <button onclick="alignItem('right')" title="Sağa hizala"><i class="fa-solid fa-align-right"></i></button>
+      <button onclick="alignItem('left')"><i class="fa-solid fa-align-left"></i></button>
+      <button onclick="alignItem('center')"><i class="fa-solid fa-align-center"></i></button>
+      <button onclick="alignItem('right')"><i class="fa-solid fa-align-right"></i></button>
     </div>
     <button onclick="deleteSelected()">Sil</button>
   </div>
