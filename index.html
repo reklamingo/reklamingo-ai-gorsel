@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CanvasEditor Pro</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">Sosyal Medya Görsel Tasarım Editörü</div>
+  <div class="container">
+    <div class="sidebar">
+      <div class="section">
+        <h3>Ebat Seç</h3>
+        <select id="sizeSelect">
+          <option value="1080x1080">Kare (1080x1080)</option>
+          <option value="1080x1350">Dikey (1080x1350)</option>
+          <option value="1080x1920">Hikaye (1080x1920)</option>
+          <option value="1200x628">Yatay (1200x628)</option>
+          <option value="custom">Özel Boyut</option>
+        </select>
+        <div id="customSize" style="display: none;">
+          <input type="number" id="customWidth" placeholder="Genişlik (px)">
+          <input type="number" id="customHeight" placeholder="Yükseklik (px)">
+          <button onclick="applyCustomSize()">Uygula</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Arka Plan</h3>
+        <input type="color" id="bgColor" onchange="setBackgroundColor(this.value)" value="#ffffff">
+        <input type="file" accept="image/*" onchange="uploadBackground(event)">
+      </div>
+
+      <div class="section">
+        <h3>Logo Ekle</h3>
+        <input type="file" accept="image/*" onchange="uploadLogo(event)">
+      </div>
+
+      <div class="section">
+        <h3>Metin Ekle</h3>
+        <input type="text" id="textInput" placeholder="Metin içeriği" />
+        <select id="fontSize">
+          <option value="20px">20</option>
+          <option value="28px" selected>28</option>
+          <option value="36px">36</option>
+          <option value="48px">48</option>
+        </select>
+        <input type="color" id="fontColor" value="#000000" />
+        <button onclick="addText()">Metni Ekle</button>
+      </div>
+
+      <div class="section">
+        <h3>Çerçeve</h3>
+        <input type="color" id="frameColor" value="#000000" />
+        <button onclick="addFrame()">Çerçeve Ekle</button>
+      </div>
+
+      <div class="section">
+        <button onclick="downloadImage()">PNG İndir</button>
+      </div>
+    </div>
+
+    <div class="canvas-area">
+      <div class="canvas-content" id="canvas">
+        <!-- Dinamik içerikler buraya eklenecek -->
+      </div>
+    </div>
+  </div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
