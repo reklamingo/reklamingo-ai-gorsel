@@ -1,4 +1,4 @@
-// CanvasEditorV2.1 - script.js (Geliştirilmiş)
+// CanvasEditorV2.2 - script.js (Tüm hatalar düzeltildi, görsel şov eklendi)
 
 const canvas = document.getElementById("canvas");
 let selectedElement = null;
@@ -20,29 +20,33 @@ const gradients = [
 function initPalettes() {
   const colorPalette = document.getElementById("colorPalette");
   const gradientPalette = document.getElementById("gradientPalette");
+  colorPalette.innerHTML = "";
+  gradientPalette.innerHTML = "";
 
   colors.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "color-box";
-    div.style.background = c;
-    div.title = c;
-    div.onclick = () => {
+    const btn = document.createElement("button");
+    btn.className = "color-box";
+    btn.style.background = c;
+    btn.title = c;
+    btn.onclick = () => {
       canvas.style.background = c;
+      canvas.style.backgroundImage = "none";
       canvas.style.filter = getBgFilter();
     };
-    colorPalette.appendChild(div);
+    colorPalette.appendChild(btn);
   });
 
   gradients.forEach(g => {
-    const div = document.createElement("div");
-    div.className = "gradient-box";
-    div.style.background = g;
-    div.title = "Gradyan";
-    div.onclick = () => {
+    const btn = document.createElement("button");
+    btn.className = "gradient-box";
+    btn.style.background = g;
+    btn.title = "Gradyan";
+    btn.onclick = () => {
       canvas.style.background = g;
+      canvas.style.backgroundImage = "none";
       canvas.style.filter = getBgFilter();
     };
-    gradientPalette.appendChild(div);
+    gradientPalette.appendChild(btn);
   });
 
   document.getElementById("bgOpacity").oninput = updateBgFilter;
@@ -64,6 +68,7 @@ function applyCustomSize() {
   const h = document.getElementById("customHeight").value;
   canvas.style.width = `${w}px`;
   canvas.style.height = `${h}px`;
+  zoomToFit();
 }
 
 document.getElementById("sizeSelect").onchange = function () {
@@ -73,6 +78,7 @@ document.getElementById("sizeSelect").onchange = function () {
     const [w, h] = value.split("x");
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
+    zoomToFit();
   }
 };
 
@@ -89,7 +95,7 @@ function uploadBackground(e) {
 
 function addElement(content, isText = true) {
   const el = document.createElement("div");
-  el.className = "canvas-item";
+  el.className = "canvas-item animate";
   el.contentEditable = isText;
   el.style.top = "60px";
   el.style.left = "60px";
@@ -101,8 +107,17 @@ function addElement(content, isText = true) {
   el.style.padding = "4px";
   el.style.border = "1px dashed transparent";
   el.style.zIndex = "10";
-  if (isText) el.innerText = content;
-  else el.appendChild(content);
+
+  if (isText) {
+    el.innerText = content;
+    el.style.fontWeight = boldActive ? "bold" : "normal";
+    el.style.fontStyle = italicActive ? "italic" : "normal";
+    el.style.color = document.getElementById("fontColor").value;
+    el.style.fontSize = document.getElementById("fontSize").value;
+    el.style.fontFamily = document.getElementById("fontFamily").value;
+  } else {
+    el.appendChild(content);
+  }
 
   el.onclick = () => selectElement(el);
   el.ondblclick = e => e.stopPropagation();
@@ -112,7 +127,7 @@ function addElement(content, isText = true) {
 
 function addText() {
   const text = document.getElementById("textInput").value;
-  addElement(text);
+  if (text.trim()) addElement(text);
 }
 
 function uploadLogo(e) {
@@ -121,10 +136,16 @@ function uploadLogo(e) {
   reader.onload = event => {
     const img = document.createElement("img");
     img.src = event.target.result;
-    img.style.width = "100px";
+    img.style.width = "100%";
+    img.style.height = "auto";
     img.style.display = "block";
-    img.style.pointerEvents = "none";
-    addElement(img, false);
+    img.draggable = false;
+
+    const wrapper = document.createElement("div");
+    wrapper.style.width = "120px";
+    wrapper.style.height = "auto";
+    wrapper.appendChild(img);
+    addElement(wrapper, false);
   };
   reader.readAsDataURL(file);
 }
@@ -145,8 +166,7 @@ function selectElement(el) {
 
 function rgb2hex(rgb) {
   const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
-  return result ?
-    "#" + result.slice(1).map(x => ("0" + parseInt(x).toString(16)).slice(-2)).join("") : rgb;
+  return result ? "#" + result.slice(1).map(x => ("0" + parseInt(x).toString(16)).slice(-2)).join("") : rgb;
 }
 
 document.getElementById("editContent").oninput = e => {
@@ -162,10 +182,7 @@ document.getElementById("editSize").oninput = e => {
 function alignItem(direction) {
   if (!selectedElement) return;
   const parentWidth = canvas.offsetWidth;
-  const parentHeight = canvas.offsetHeight;
   const elWidth = selectedElement.offsetWidth;
-  const elHeight = selectedElement.offsetHeight;
-
   if (direction === "center") {
     selectedElement.style.left = `${(parentWidth - elWidth) / 2}px`;
   } else if (direction === "left") {
@@ -186,7 +203,7 @@ function deleteSelected() {
 function addFrame() {
   const color = document.getElementById("frameColor").value;
   const frame = document.createElement("div");
-  frame.className = "frame-border";
+  frame.className = "frame-border animate";
   frame.style.borderColor = color;
   canvas.appendChild(frame);
 }
@@ -200,8 +217,20 @@ function downloadImage() {
   });
 }
 
+function zoomToFit() {
+  const canvasWrapper = document.querySelector(".canvas-area");
+  const cW = canvasWrapper.offsetWidth;
+  const cH = canvasWrapper.offsetHeight;
+  const width = canvas.offsetWidth;
+  const height = canvas.offsetHeight;
+  const scale = Math.min(cW / width, cH / height, 1);
+  canvas.style.transform = `scale(${scale})`;
+  canvas.style.transformOrigin = "top left";
+}
+
 window.onload = () => {
   initPalettes();
+  zoomToFit();
   const fontSelect = document.getElementById("fontFamily");
   const editFont = document.getElementById("editFont");
   const fonts = ["Quicksand", "Arial", "Montserrat", "Roboto", "Georgia"];
