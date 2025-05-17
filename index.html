@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CanvasEditor V4</title>
+  <title>CanvasEditor V4.1</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
 </head>
@@ -24,12 +24,24 @@
       <section class="tool-group">
         <h3>Arka Plan</h3>
         <input type="color" id="bgColor" />
+        <div id="gradientPalette" class="palette-wrapper"></div>
+        <label>Opacity</label>
+        <input type="range" id="bgOpacity" min="0" max="100" value="100" />
+        <label>Blur</label>
+        <input type="range" id="bgBlur" min="0" max="20" value="0" />
         <input type="file" accept="image/*" onchange="uploadBackground(event)" />
       </section>
 
       <section class="tool-group">
         <h3>Metin</h3>
         <input type="text" id="textInput" placeholder="Metin yaz..." />
+        <select id="fontFamily"></select>
+        <select id="fontSize"></select>
+        <input type="color" id="fontColor" value="#000000" />
+        <div class="style-buttons">
+          <button onclick="toggleBold()">B</button>
+          <button onclick="toggleItalic()">I</button>
+        </div>
         <button onclick="addText()">Metni Ekle</button>
       </section>
 
@@ -41,6 +53,8 @@
       <section class="tool-group">
         <h3>Çerçeve</h3>
         <input type="color" id="frameColor" value="#000000" />
+        <label>İç Boşluk</label>
+        <input type="range" id="framePadding" min="0" max="50" value="20" />
         <button onclick="addFrame()">Çerçeve Ekle</button>
       </section>
 
@@ -54,6 +68,22 @@
     <main class="editor-canvas-area">
       <div id="canvas" class="editor-canvas"></div>
     </main>
+  </div>
+
+  <div id="editPanel" class="edit-panel hidden">
+    <h3>Seçilen Öğeyi Düzenle</h3>
+    <label>İçerik</label>
+    <input type="text" id="editContent" />
+    <label>Renk</label>
+    <input type="color" id="editColor" />
+    <label>Boyut</label>
+    <input type="range" id="editSize" min="12" max="100" />
+    <div class="align-buttons">
+      <button onclick="alignItem('left')">Sola</button>
+      <button onclick="alignItem('center')">Ortala</button>
+      <button onclick="alignItem('right')">Sağa</button>
+    </div>
+    <button onclick="deleteSelected()">Sil</button>
   </div>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
