@@ -1,4 +1,4 @@
-/* CanvasEditorV2.1 - style.css */
+/* CanvasEditorV2.2 - style.css (Görsel Şov + Hatalar Düzeltilmiş) */
 
 :root {
   --primary: #003e92;
@@ -9,14 +9,9 @@
   --shadow: rgba(0, 0, 0, 0.1);
 }
 
-* {
-  box-sizing: border-box;
+body {
   font-family: 'Quicksand', sans-serif;
   margin: 0;
-  padding: 0;
-}
-
-body {
   background: var(--gray);
   color: var(--dark);
 }
@@ -24,7 +19,7 @@ body {
 header {
   background: var(--primary);
   color: white;
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   font-size: 22px;
 }
@@ -119,6 +114,7 @@ header {
   border: 2px dashed var(--primary);
   border-radius: 12px;
   overflow: hidden;
+  transform-origin: top left;
 }
 
 .canvas-item {
@@ -129,6 +125,18 @@ header {
   overflow: auto;
   padding: 4px;
   z-index: 10;
+  animation: fadeInScale 0.4s ease;
+}
+
+@keyframes fadeInScale {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .color-box,
@@ -138,7 +146,7 @@ header {
   border-radius: 6px;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.2s, border 0.2s;
+  transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
 }
 
 .color-box:hover,
@@ -199,6 +207,19 @@ header {
 
 #editPanel button:hover {
   background: #bb2d3b;
+}
+
+.frame-border {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 5px solid black;
+  border-radius: 12px;
+  z-index: 1;
+  pointer-events: none;
+  animation: fadeInScale 0.3s ease;
 }
 
 @media (max-width: 768px) {
