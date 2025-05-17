@@ -1,188 +1,247 @@
 :root {
   --primary: #003e92;
   --accent: #3ecf00;
-  --light-bg: #f9f9f9;
-  --dark-text: #212529;
-  --gray: #dee2e6;
-  --border: #ccc;
+  --gray: #e9ecef;
+  --dark: #212529;
+  --light: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.1);
 }
 
 * {
   box-sizing: border-box;
   font-family: 'Quicksand', sans-serif;
-  margin: 0;
-  padding: 0;
 }
 
 body {
-  background: var(--light-bg);
-  color: var(--dark-text);
-  font-size: 16px;
+  margin: 0;
+  background: var(--gray);
+  color: var(--dark);
 }
 
+/* HEADER */
 header {
   background: var(--primary);
   color: white;
-  padding: 20px;
+  padding: 16px;
   text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
+  font-size: 22px;
 }
 
-main {
+/* LAYOUT */
+.layout {
   display: flex;
   flex-wrap: wrap;
-  padding: 20px;
   gap: 20px;
+  padding: 20px;
 }
 
-.panel {
+/* SIDEBAR */
+.sidebar {
   flex: 1 1 300px;
-  max-width: 360px;
+  max-width: 340px;
   background: white;
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-  overflow-y: auto;
-  max-height: calc(100vh - 80px);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: fit-content;
 }
 
-.panel section {
-  margin-bottom: 24px;
-}
-
-.panel h2 {
-  font-size: 18px;
+.sidebar section h2 {
+  font-size: 16px;
   color: var(--primary);
   margin-bottom: 8px;
 }
 
-.panel input,
-.panel select,
-.panel button {
+.sidebar input,
+.sidebar select,
+.sidebar button {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--gray);
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  margin-top: 6px;
-  margin-bottom: 12px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
-.panel button {
+.sidebar button {
   background: var(--accent);
   color: white;
-  border: none;
+  font-weight: bold;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s;
-}
-
-.panel button:hover {
-  background: #2bb400;
-}
-
-.font-controls,
-.style-controls {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  align-items: center;
-}
-
-.style-controls button {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  background: #fff;
-  border: 1px solid var(--gray);
-  color: var(--primary);
-  font-size: 18px;
-  border-radius: 8px;
+  border: none;
   transition: 0.2s;
 }
 
-.style-controls button:hover {
+.sidebar button:hover {
+  background: #2db300;
+}
+
+.style-buttons button,
+.align-buttons button {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f8f9fa;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 6px;
+  transition: 0.2s;
+}
+
+.style-buttons button:hover,
+.align-buttons button:hover {
   background: var(--accent);
   color: white;
   border-color: var(--accent);
 }
 
-.canvas-container {
+button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* CANVAS */
+.canvas-area {
   flex: 2 1 600px;
   background: white;
+  border-radius: 12px;
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px var(--shadow);
+  position: relative;
 }
 
 .canvas-content {
-  background: #ffffff;
-  border: 2px dashed var(--primary);
-  min-height: 500px;
-  max-width: 100%;
   position: relative;
-  margin: 0 auto;
+  width: 100%;
+  min-height: 500px;
+  background: white;
+  border: 2px dashed var(--primary);
+  border-radius: 12px;
   overflow: hidden;
-  border-radius: 16px;
 }
 
 .canvas-item {
   position: absolute;
-  cursor: move;
   user-select: none;
-  z-index: 10;
+  cursor: move;
+  resize: both;
+  overflow: visible;
+  padding: 4px;
 }
 
-.canvas-item img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.canvas-item:focus {
+  outline: 2px dashed var(--accent);
 }
 
+/* PALETTES */
 #colorPalette,
 #gradientPalette {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   margin: 8px 0;
 }
 
 .color-box,
 .gradient-box {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
   border: 1px solid #ccc;
   cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.hidden {
+.color-box:hover,
+.gradient-box:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 5px var(--accent);
+}
+
+/* ÖĞE PANELİ */
+#editPanel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  width: 260px;
+  box-shadow: 0 2px 20px var(--shadow);
+  z-index: 999;
+}
+
+#editPanel.hidden {
   display: none;
 }
 
-/* Frame style */
+#editPanel h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: var(--primary);
+}
+
+#editPanel input,
+#editPanel select,
+#editPanel button {
+  margin-bottom: 10px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#editPanel button {
+  background: #dc3545;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#editPanel button:hover {
+  background: #bb2d3b;
+}
+
+.align-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
 .frame-border {
   position: absolute;
   top: 20px;
   left: 20px;
   right: 20px;
   bottom: 20px;
-  border: 5px solid black;
-  z-index: 5;
+  border: 4px solid black;
+  z-index: 1;
   pointer-events: none;
+  border-radius: 6px;
 }
 
-/* Responsive tweaks */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  main {
+  .layout {
     flex-direction: column;
   }
 
-  .panel,
-  .canvas-container {
-    width: 100%;
+  .canvas-area,
+  .sidebar {
+    max-width: 100%;
+  }
+
+  #editPanel {
+    width: 90%;
+    right: 5%;
+    bottom: 10px;
   }
 }
