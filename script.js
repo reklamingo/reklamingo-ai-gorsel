@@ -1,7 +1,49 @@
-let canvas = document.getElementById('canvas');
+const canvas = document.getElementById('canvas');
+let dragItem = null;
+let boldActive = false;
+let italicActive = false;
 
+const colorOptions = [
+  '#ffffff', '#000000', '#ff0000', '#00ff00',
+  '#0000ff', '#ffcc00', '#ff00ff', '#00ffff',
+  '#888888', '#3ecf00', '#003e92'
+];
+
+const gradientOptions = [
+  'linear-gradient(45deg, #ff7e5f, #feb47b)',
+  'linear-gradient(45deg, #6a11cb, #2575fc)',
+  'linear-gradient(45deg, #fc466b, #3f5efb)',
+  'linear-gradient(45deg, #00c6ff, #0072ff)',
+  'linear-gradient(45deg, #f7971e, #ffd200)',
+  'linear-gradient(45deg, #eecda3, #ef629f)',
+  'linear-gradient(45deg, #43cea2, #185a9d)',
+  'linear-gradient(45deg, #f953c6, #b91d73)'
+];
+
+// ---------- BOYUT SEÇİMİ ----------
+document.getElementById('sizeSelect').addEventListener('change', function () {
+  const value = this.value;
+  if (value === 'custom') {
+    document.getElementById('customSize').classList.remove('hidden');
+  } else {
+    document.getElementById('customSize').classList.add('hidden');
+    const [w, h] = value.split('x');
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+  }
+});
+
+function applyCustomSize() {
+  const w = document.getElementById('customWidth').value;
+  const h = document.getElementById('customHeight').value;
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+}
+
+// ---------- ARKA PLAN ----------
 function setBackgroundColor(color) {
   canvas.style.background = color;
+  canvas.style.backgroundImage = '';
 }
 
 function uploadBackground(e) {
@@ -10,46 +52,80 @@ function uploadBackground(e) {
   reader.onload = function (event) {
     canvas.style.backgroundImage = `url(${event.target.result})`;
     canvas.style.backgroundSize = 'cover';
+    canvas.style.backgroundPosition = 'center';
   };
   reader.readAsDataURL(file);
 }
 
+// ---------- LOGO / İSİM ----------
 function uploadLogo(e) {
   const file = e.target.files[0];
   const reader = new FileReader();
   reader.onload = function (event) {
     const img = document.createElement('img');
     img.src = event.target.result;
-    img.style.width = '100px';
+    img.style.width = '120px';
 
     const wrapper = document.createElement('div');
     wrapper.className = 'canvas-item';
-    wrapper.style.top = '30px';
-    wrapper.style.left = '30px';
+    wrapper.style.top = '40px';
+    wrapper.style.left = '40px';
     wrapper.appendChild(img);
+
     makeInteractive(wrapper);
     canvas.appendChild(wrapper);
   };
   reader.readAsDataURL(file);
 }
 
+function addNameAsLogo() {
+  const name = document.getElementById('nameText').value.trim();
+  if (!name) return;
+  const div = document.createElement('div');
+  div.className = 'canvas-item';
+  div.style.top = '50px';
+  div.style.left = '50px';
+  div.style.fontSize = '32px';
+  div.style.fontWeight = 'bold';
+  div.style.color = '#003e92';
+  div.textContent = name;
+  makeInteractive(div);
+  canvas.appendChild(div);
+}
+
+// ---------- METİN EKLEME ----------
+function toggleBold() {
+  boldActive = !boldActive;
+  document.getElementById('boldBtn').classList.toggle('active', boldActive);
+}
+
+function toggleItalic() {
+  italicActive = !italicActive;
+  document.getElementById('italicBtn').classList.toggle('active', italicActive);
+}
+
 function addText() {
   const value = document.getElementById('textInput').value;
+  const font = document.getElementById('fontSelect').value;
   const size = document.getElementById('fontSize').value;
   const color = document.getElementById('fontColor').value;
 
   const div = document.createElement('div');
   div.className = 'canvas-item';
   div.textContent = value;
+  div.style.top = '60px';
+  div.style.left = '60px';
+  div.style.fontFamily = font;
   div.style.fontSize = size;
   div.style.color = color;
-  div.style.fontWeight = 'bold';
-  div.style.top = '40px';
-  div.style.left = '40px';
+  div.style.fontWeight = boldActive ? 'bold' : 'normal';
+  div.style.fontStyle = italicActive ? 'italic' : 'normal';
+
   makeInteractive(div);
   canvas.appendChild(div);
 }
 
+// ---------- ÇERÇEVE ----------
 function addFrame() {
   const color = document.getElementById('frameColor').value;
   const frame = document.createElement('div');
@@ -58,6 +134,7 @@ function addFrame() {
   canvas.appendChild(frame);
 }
 
+// ---------- SÜRÜKLEME / SİLME ----------
 function makeInteractive(el) {
   el.setAttribute('draggable', true);
   el.addEventListener('dragstart', dragStart);
@@ -70,8 +147,6 @@ function makeInteractive(el) {
   el.addEventListener('touchmove', touchMove, { passive: false });
 }
 
-let dragItem = null;
-
 function dragStart(e) {
   dragItem = e.target;
   e.dataTransfer.setData('text/plain', '');
@@ -83,8 +158,8 @@ canvas.addEventListener('drop', (e) => {
   e.preventDefault();
   if (dragItem) {
     const rect = canvas.getBoundingClientRect();
-    dragItem.style.left = (e.clientX - rect.left - 50) + 'px';
-    dragItem.style.top = (e.clientY - rect.top - 20) + 'px';
+    dragItem.style.left = `${e.clientX - rect.left - dragItem.offsetWidth / 2}px`;
+    dragItem.style.top = `${e.clientY - rect.top - dragItem.offsetHeight / 2}px`;
   }
 });
 
@@ -95,30 +170,12 @@ function touchStart(e) {
 function touchMove(e) {
   if (dragItem) {
     const rect = canvas.getBoundingClientRect();
-    dragItem.style.left = (e.touches[0].clientX - rect.left - 50) + 'px';
-    dragItem.style.top = (e.touches[0].clientY - rect.top - 20) + 'px';
+    dragItem.style.left = `${e.touches[0].clientX - rect.left - dragItem.offsetWidth / 2}px`;
+    dragItem.style.top = `${e.touches[0].clientY - rect.top - dragItem.offsetHeight / 2}px`;
   }
 }
 
-function applyCustomSize() {
-  const width = document.getElementById('customWidth').value;
-  const height = document.getElementById('customHeight').value;
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
-}
-
-document.getElementById('sizeSelect').addEventListener('change', function () {
-  const value = this.value;
-  if (value === 'custom') {
-    document.getElementById('customSize').style.display = 'block';
-  } else {
-    document.getElementById('customSize').style.display = 'none';
-    const [w, h] = value.split('x');
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-  }
-});
-
+// ---------- PNG OLARAK KAYDET ----------
 function downloadImage() {
   html2canvas(canvas).then((canvasExport) => {
     const link = document.createElement('a');
@@ -127,3 +184,32 @@ function downloadImage() {
     link.click();
   });
 }
+
+// ---------- RENK PALETİ OLUŞTUR ----------
+function createColorPalette() {
+  const palette = document.getElementById('colorPalette');
+  colorOptions.forEach(color => {
+    const box = document.createElement('div');
+    box.className = 'color-box';
+    box.style.background = color;
+    box.onclick = () => setBackgroundColor(color);
+    palette.appendChild(box);
+  });
+}
+
+function createGradientPalette() {
+  const palette = document.getElementById('gradientPalette');
+  gradientOptions.forEach(gradient => {
+    const box = document.createElement('div');
+    box.className = 'gradient-box';
+    box.style.background = gradient;
+    box.onclick = () => {
+      canvas.style.background = gradient;
+    };
+    palette.appendChild(box);
+  });
+}
+
+// ---------- BAŞLAT ----------
+createColorPalette();
+createGradientPalette();
