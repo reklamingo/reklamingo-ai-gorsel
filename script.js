@@ -1,4 +1,4 @@
-// CanvasEditorV2.2 - script.js (Tüm hatalar düzeltildi, görsel şov eklendi)
+// CanvasEditor V2.3 - script.js
 
 const canvas = document.getElementById("canvas");
 let selectedElement = null;
@@ -20,14 +20,11 @@ const gradients = [
 function initPalettes() {
   const colorPalette = document.getElementById("colorPalette");
   const gradientPalette = document.getElementById("gradientPalette");
-  colorPalette.innerHTML = "";
-  gradientPalette.innerHTML = "";
 
   colors.forEach(c => {
     const btn = document.createElement("button");
     btn.className = "color-box";
     btn.style.background = c;
-    btn.title = c;
     btn.onclick = () => {
       canvas.style.background = c;
       canvas.style.backgroundImage = "none";
@@ -40,7 +37,6 @@ function initPalettes() {
     const btn = document.createElement("button");
     btn.className = "gradient-box";
     btn.style.background = g;
-    btn.title = "Gradyan";
     btn.onclick = () => {
       canvas.style.background = g;
       canvas.style.backgroundImage = "none";
@@ -63,39 +59,9 @@ function updateBgFilter() {
   canvas.style.opacity = document.getElementById("bgOpacity").value / 100;
 }
 
-function applyCustomSize() {
-  const w = document.getElementById("customWidth").value;
-  const h = document.getElementById("customHeight").value;
-  canvas.style.width = `${w}px`;
-  canvas.style.height = `${h}px`;
-  zoomToFit();
-}
-
-document.getElementById("sizeSelect").onchange = function () {
-  const value = this.value;
-  document.getElementById("customSize").classList.toggle("hidden", value !== "custom");
-  if (value !== "custom") {
-    const [w, h] = value.split("x");
-    canvas.style.width = `${w}px`;
-    canvas.style.height = `${h}px`;
-    zoomToFit();
-  }
-};
-
-function uploadBackground(e) {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = event => {
-    canvas.style.backgroundImage = `url(${event.target.result})`;
-    canvas.style.backgroundSize = "cover";
-    canvas.style.backgroundPosition = "center";
-  };
-  reader.readAsDataURL(file);
-}
-
 function addElement(content, isText = true) {
   const el = document.createElement("div");
-  el.className = "canvas-item animate";
+  el.className = "canvas-item";
   el.contentEditable = isText;
   el.style.top = "60px";
   el.style.left = "60px";
@@ -105,7 +71,6 @@ function addElement(content, isText = true) {
   el.style.minWidth = "40px";
   el.style.minHeight = "40px";
   el.style.padding = "4px";
-  el.style.border = "1px dashed transparent";
   el.style.zIndex = "10";
 
   if (isText) {
@@ -157,53 +122,19 @@ function addNameAsLogo() {
 
 function selectElement(el) {
   selectedElement = el;
-  const panel = document.getElementById("editPanel");
-  panel.classList.remove("hidden");
-  document.getElementById("editContent").value = el.innerText || "";
-  document.getElementById("editColor").value = rgb2hex(el.style.color || "#000000");
-  document.getElementById("editSize").value = parseInt(el.style.fontSize) || 24;
-}
-
-function rgb2hex(rgb) {
-  const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
-  return result ? "#" + result.slice(1).map(x => ("0" + parseInt(x).toString(16)).slice(-2)).join("") : rgb;
-}
-
-document.getElementById("editContent").oninput = e => {
-  if (selectedElement) selectedElement.innerText = e.target.value;
-};
-document.getElementById("editColor").oninput = e => {
-  if (selectedElement) selectedElement.style.color = e.target.value;
-};
-document.getElementById("editSize").oninput = e => {
-  if (selectedElement) selectedElement.style.fontSize = `${e.target.value}px`;
-};
-
-function alignItem(direction) {
-  if (!selectedElement) return;
-  const parentWidth = canvas.offsetWidth;
-  const elWidth = selectedElement.offsetWidth;
-  if (direction === "center") {
-    selectedElement.style.left = `${(parentWidth - elWidth) / 2}px`;
-  } else if (direction === "left") {
-    selectedElement.style.left = "0px";
-  } else if (direction === "right") {
-    selectedElement.style.left = `${parentWidth - elWidth}px`;
-  }
 }
 
 function deleteSelected() {
   if (selectedElement) {
     canvas.removeChild(selectedElement);
     selectedElement = null;
-    document.getElementById("editPanel").classList.add("hidden");
   }
 }
 
 function addFrame() {
   const color = document.getElementById("frameColor").value;
   const frame = document.createElement("div");
-  frame.className = "frame-border animate";
+  frame.className = "frame-border";
   frame.style.borderColor = color;
   canvas.appendChild(frame);
 }
@@ -217,30 +148,16 @@ function downloadImage() {
   });
 }
 
-function zoomToFit() {
-  const canvasWrapper = document.querySelector(".canvas-area");
-  const cW = canvasWrapper.offsetWidth;
-  const cH = canvasWrapper.offsetHeight;
-  const width = canvas.offsetWidth;
-  const height = canvas.offsetHeight;
-  const scale = Math.min(cW / width, cH / height, 1);
-  canvas.style.transform = `scale(${scale})`;
-  canvas.style.transformOrigin = "top left";
-}
-
 window.onload = () => {
   initPalettes();
-  zoomToFit();
+
   const fontSelect = document.getElementById("fontFamily");
-  const editFont = document.getElementById("editFont");
   const fonts = ["Quicksand", "Arial", "Montserrat", "Roboto", "Georgia"];
   fonts.forEach(f => {
-    const opt1 = document.createElement("option");
-    opt1.value = f;
-    opt1.innerText = f;
-    fontSelect.appendChild(opt1);
-    const opt2 = opt1.cloneNode(true);
-    editFont.appendChild(opt2);
+    const opt = document.createElement("option");
+    opt.value = f;
+    opt.innerText = f;
+    fontSelect.appendChild(opt);
   });
 
   const sizeSelect = document.getElementById("fontSize");
