@@ -1,3 +1,5 @@
+/* CanvasEditorV2.1 - style.css */
+
 :root {
   --primary: #003e92;
   --accent: #3ecf00;
@@ -10,24 +12,23 @@
 * {
   box-sizing: border-box;
   font-family: 'Quicksand', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
   background: var(--gray);
   color: var(--dark);
 }
 
-/* HEADER */
 header {
   background: var(--primary);
   color: white;
-  padding: 16px;
+  padding: 20px;
   text-align: center;
   font-size: 22px;
 }
 
-/* LAYOUT */
 .layout {
   display: flex;
   flex-wrap: wrap;
@@ -35,7 +36,6 @@ header {
   padding: 20px;
 }
 
-/* SIDEBAR */
 .sidebar {
   flex: 1 1 300px;
   max-width: 340px;
@@ -52,7 +52,7 @@ header {
 .sidebar section h2 {
   font-size: 16px;
   color: var(--primary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .sidebar input,
@@ -101,20 +101,14 @@ header {
   border-color: var(--accent);
 }
 
-button.active {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
-
-/* CANVAS */
 .canvas-area {
   flex: 2 1 600px;
   background: white;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 12px var(--shadow);
-  position: relative;
+  overflow: auto;
+  max-height: 90vh;
 }
 
 .canvas-content {
@@ -132,21 +126,9 @@ button.active {
   user-select: none;
   cursor: move;
   resize: both;
-  overflow: visible;
+  overflow: auto;
   padding: 4px;
-}
-
-.canvas-item:focus {
-  outline: 2px dashed var(--accent);
-}
-
-/* PALETTES */
-#colorPalette,
-#gradientPalette {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0;
+  z-index: 10;
 }
 
 .color-box,
@@ -154,18 +136,26 @@ button.active {
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, border 0.2s;
 }
 
 .color-box:hover,
 .gradient-box:hover {
   transform: scale(1.1);
+  border-color: var(--accent);
   box-shadow: 0 0 5px var(--accent);
 }
 
-/* ÖĞE PANELİ */
+#colorPalette,
+#gradientPalette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
 #editPanel {
   position: fixed;
   bottom: 20px;
@@ -183,19 +173,20 @@ button.active {
 }
 
 #editPanel h3 {
-  margin-bottom: 12px;
   font-size: 16px;
   color: var(--primary);
+  margin-bottom: 12px;
 }
 
 #editPanel input,
 #editPanel select,
 #editPanel button {
-  margin-bottom: 10px;
-  padding: 8px;
   width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 14px;
 }
 
 #editPanel button {
@@ -210,25 +201,6 @@ button.active {
   background: #bb2d3b;
 }
 
-.align-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.frame-border {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  border: 4px solid black;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: 6px;
-}
-
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;
