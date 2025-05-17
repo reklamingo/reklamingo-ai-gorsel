@@ -3,57 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sosyal Medya Görsel Tasarım Editörü</title>
+  <title>CanvasEditor V4</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <header>
-    <h1>Sosyal Medya Görsel Tasarım Editörü</h1>
-  </header>
+  <div class="editor-wrapper">
+    <!-- Sol Panel: Araçlar + Özellikler -->
+    <aside class="editor-sidebar">
+      <header class="sidebar-header">🎨 Tasarım Paneli</header>
 
-  <main class="editor-layout">
-    <aside class="control-panel">
-      <section>
-        <h2>Görsel Boyutu</h2>
-        <div class="size-options">
-          <button onclick="setSize(1080,1080)">Kare (1:1)</button>
-          <button onclick="setSize(1080,1920)">Dikey (9:16)</button>
-          <button onclick="setSize(1080,1440)">Dikey (3:4)</button>
-          <button onclick="setSize(1200,628)">Yatay (4:3)</button>
-        </div>
+      <section class="tool-group">
+        <h3>Görsel Boyutu</h3>
+        <button onclick="setSize(1080,1080)">Kare (1:1)</button>
+        <button onclick="setSize(1080,1350)">Dikey (4:5)</button>
+        <button onclick="setSize(1080,1920)">Hikaye (9:16)</button>
+        <button onclick="setSize(1200,628)">Yatay (4:3)</button>
       </section>
 
-      <section>
-        <h2>Arka Plan</h2>
+      <section class="tool-group">
+        <h3>Arka Plan</h3>
         <input type="color" id="bgColor" />
-        <div class="color-palette" id="colorPalette"></div>
-        <div class="gradient-palette" id="gradientPalette"></div>
         <input type="file" accept="image/*" onchange="uploadBackground(event)" />
       </section>
 
-      <section>
-        <h2>Metin Ekle</h2>
-        <input type="text" id="textInput" placeholder="Metin yazın" />
-        <button onclick="addText('h1')">Başlık Ekle</button>
-        <button onclick="addText('p')">Metin Ekle</button>
+      <section class="tool-group">
+        <h3>Metin</h3>
+        <input type="text" id="textInput" placeholder="Metin yaz..." />
+        <button onclick="addText()">Metni Ekle</button>
       </section>
 
-      <section>
-        <h2>Logo</h2>
+      <section class="tool-group">
+        <h3>Logo / Görsel</h3>
         <input type="file" accept="image/*" onchange="uploadLogo(event)" />
       </section>
 
-      <section>
+      <section class="tool-group">
+        <h3>Çerçeve</h3>
+        <input type="color" id="frameColor" value="#000000" />
+        <button onclick="addFrame()">Çerçeve Ekle</button>
+      </section>
+
+      <section class="tool-group">
         <button onclick="downloadImage()">PNG Olarak İndir</button>
         <button onclick="clearCanvas()">Temizle</button>
       </section>
     </aside>
 
-    <section class="canvas-area">
-      <div id="canvas" class="design-canvas"></div>
-    </section>
-  </main>
+    <!-- Sağ Panel: Canvas -->
+    <main class="editor-canvas-area">
+      <div id="canvas" class="editor-canvas"></div>
+    </main>
+  </div>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script src="script.js"></script>
