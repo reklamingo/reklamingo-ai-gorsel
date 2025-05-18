@@ -1,15 +1,16 @@
-# CanvasEditor V5
+# CanvasEditor V6
 
-🚀 Gelişmiş, mobil uyumlu, kullanıcı dostu görsel tasarım uygulaması.  
-✅ Ebat seçimi, çerçeve ekleme, hizalama, sürükle bırak destekli.
+🚀 Bu sistem:
+- Sürükle bırak destekli yazı ve logo
+- Arka plan: renk, gradyan, görsel
+- Çerçeve: renk, kalınlık, iç boşluk, köşe yuvarlatma
+- PNG olarak dışa aktarım (yalnızca canvas)
 
-## Geliştirme
-```bash
-npm install
-npm run build
+## Komutlar
+npm install  
+npm run build  
 npm start
-```
 
 ## Render Ayarları
-- Build Command: ./render-build.sh
-- Start Command: serve -s build
+Build Command: ./render-build.sh  
+Start Command: serve -s build
