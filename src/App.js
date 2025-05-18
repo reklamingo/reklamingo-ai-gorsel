@@ -1,8 +1,16 @@
 
 import React, { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
-import { Paintbrush, Type, Image as ImageIcon, Square, Ruler } from 'lucide-react';
+import { Paintbrush, Type, ImageIcon, Square, Ruler } from 'lucide-react';
 import './index.css';
+
+const TABS = [
+  { id: 'background', icon: <Paintbrush size={16} />, label: 'Arka Plan' },
+  { id: 'text', icon: <Type size={16} />, label: 'Metin' },
+  { id: 'logo', icon: <ImageIcon size={16} />, label: 'Logo' },
+  { id: 'frame', icon: <Square size={16} />, label: 'Çerçeve' },
+  { id: 'size', icon: <Ruler size={16} />, label: 'Tuval' },
+];
 
 function App() {
   const canvasRef = useRef(null);
@@ -13,7 +21,9 @@ function App() {
   const [fontSize, setFontSize] = useState(48);
   const [fontColor, setFontColor] = useState('#000000');
   const [logo, setLogo] = useState(null);
-  const [border, setBorder] = useState({ color: '#000000', width: 5, radius: 10 });
+  const [border, setBorder] = useState({ color: '#000000', width: 4, radius: 10 });
+
+  const scaleFactor = Math.min(1, 600 / canvasSize.height);
 
   const handleDownload = () => {
     html2canvas(canvasRef.current).then(canvas => {
@@ -24,82 +34,79 @@ function App() {
     });
   };
 
-  const scaleFactor = Math.min(1, 600 / canvasSize.height);
-
-  const TabButton = ({ id, icon: Icon, label }) => (
-    <button
-      onClick={() => setTab(id)}
-      className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium w-full justify-start hover:bg-gray-200 ${
-        tab === id ? 'bg-white font-bold' : 'text-gray-700'
-      }`}
-    >
-      <Icon size={18} /> {label}
-    </button>
-  );
-
   return (
-    <div className="flex h-screen w-screen bg-gray-100 overflow-hidden">
-      <aside className="w-64 bg-gray-50 shadow-md p-4 flex flex-col gap-2">
-        <TabButton id="background" icon={Paintbrush} label="Arka Plan" />
-        <TabButton id="text" icon={Type} label="Metin" />
-        <TabButton id="logo" icon={ImageIcon} label="Logo" />
-        <TabButton id="frame" icon={Square} label="Çerçeve" />
-        <TabButton id="size" icon={Ruler} label="Tuval" />
-        <button onClick={handleDownload} className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">İndir</button>
+    <div className="flex h-screen w-screen">
+      {/* Sol Sekme Paneli */}
+      <aside className="w-56 bg-white border-r p-3 flex flex-col justify-between">
+        <div className="flex flex-col gap-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                tab === t.id
+                  ? 'bg-blue-100 text-blue-800 font-semibold'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {t.icon}
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={handleDownload}
+          className="bg-green-500 text-white py-2 rounded-md mt-4 hover:bg-green-600"
+        >
+          İndir
+        </button>
       </aside>
 
-      <main className="flex-1 flex items-center justify-center bg-gray-200">
+      {/* Orta Tuval Alanı */}
+      <main className="flex-1 flex items-center justify-center bg-gray-100">
         <div
-          className="canvas-wrapper"
           style={{
             transform: `scale(${scaleFactor})`,
             transformOrigin: 'top left',
             width: canvasSize.width,
             height: canvasSize.height,
+            backgroundColor: bgColor,
+            border: `${border.width}px solid ${border.color}`,
+            borderRadius: `${border.radius}px`,
+            padding: 20,
+            boxSizing: 'border-box',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            fontSize,
+            color: fontColor,
+            fontFamily: 'Quicksand',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 0 20px rgba(0,0,0,0.1)'
           }}
+          ref={canvasRef}
         >
-          <div
-            ref={canvasRef}
-            style={{
-              width: canvasSize.width,
-              height: canvasSize.height,
-              backgroundColor: bgColor,
-              border: `${border.width}px solid ${border.color}`,
-              borderRadius: `${border.radius}px`,
-              padding: 20,
-              boxSizing: 'border-box',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize,
-              color: fontColor,
-              fontFamily: 'Quicksand',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
-            {text}
-            {logo && (
-              <img
-                src={logo}
-                alt="logo"
-                style={{ position: 'absolute', bottom: 10, right: 10, height: 60 }}
-              />
-            )}
-          </div>
+          {text}
+          {logo && (
+            <img
+              src={logo}
+              alt="logo"
+              style={{ position: 'absolute', bottom: 10, right: 10, height: 60 }}
+            />
+          )}
         </div>
       </main>
 
-      <aside className="w-64 bg-white shadow-inner p-4 overflow-y-auto">
+      {/* Sağ Ayar Paneli */}
+      <aside className="w-64 bg-white border-l p-4 overflow-y-auto">
         {tab === 'background' && (
           <>
             <label className="block text-sm font-medium mb-1">Arka Plan Rengi</label>
-            <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="w-full h-10" />
+            <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="w-full h-10 mb-2" />
           </>
         )}
+
         {tab === 'text' && (
           <>
             <label className="block text-sm font-medium mb-1">Metin</label>
@@ -110,12 +117,14 @@ function App() {
             <input type="color" value={fontColor} onChange={e => setFontColor(e.target.value)} className="w-full h-10" />
           </>
         )}
+
         {tab === 'logo' && (
           <>
             <label className="block text-sm font-medium mb-1">Logo Yükle</label>
             <input type="file" accept="image/*" onChange={e => setLogo(URL.createObjectURL(e.target.files[0]))} />
           </>
         )}
+
         {tab === 'frame' && (
           <>
             <label className="block text-sm font-medium mb-1">Çerçeve Rengi</label>
@@ -126,6 +135,7 @@ function App() {
             <input type="number" value={border.radius} onChange={e => setBorder({ ...border, radius: Number(e.target.value) })} className="w-full" />
           </>
         )}
+
         {tab === 'size' && (
           <>
             <label className="block text-sm font-medium mb-1">Tuval Boyutu</label>
