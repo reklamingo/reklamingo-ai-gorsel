@@ -3,7 +3,7 @@ body {
   font-family: 'Quicksand', sans-serif;
 }
 
-.container {
+.layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
@@ -12,12 +12,11 @@ body {
 .sidebar {
   width: 320px;
   padding: 20px;
-  background: #003e92;
-  color: white;
+  background-color: #ffffff;
+  border-right: 1px solid #ccc;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow-y: auto;
   box-sizing: border-box;
 }
 
@@ -30,7 +29,7 @@ body {
 .sidebar select {
   padding: 6px;
   border-radius: 4px;
-  border: none;
+  border: 1px solid #ccc;
   width: 100%;
 }
 
@@ -39,22 +38,25 @@ body {
   background: #3ecf00;
   color: white;
   border: none;
-  padding: 10px;
+  padding: 12px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 4px;
 }
 
-.canvas-wrapper {
+.title {
+  color: #003e92;
+  margin-bottom: 10px;
+}
+
+.canvas-area {
   flex: 1;
-  background: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: auto;
-  padding: 20px;
+  background-color: #f0f0f0;
 }
 
 .canvas {
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
 }
