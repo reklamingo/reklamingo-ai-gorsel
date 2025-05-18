@@ -36,14 +36,16 @@ function App() {
 
   return (
     <div className="flex h-screen w-screen bg-gradient-to-br from-blue-50 to-green-100 text-sm">
-      {/* Sol sekmeli panel */}
       <aside className="w-60 bg-white shadow-md p-4 border-r flex flex-col justify-between">
         <div className="flex flex-col gap-2">
           {tabs.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={\`flex items-center gap-2 px-3 py-2 rounded-md transition font-medium \${tab === t.id ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-600'}\`}
+              className={
+                'flex items-center gap-2 px-3 py-2 rounded-md transition font-medium ' +
+                (tab === t.id ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-600')
+              }
             >
               {t.icon}
               {t.label}
@@ -53,18 +55,17 @@ function App() {
         <button onClick={handleDownload} className="mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md shadow">İndir</button>
       </aside>
 
-      {/* Tuval alanı */}
       <main className="flex-1 flex items-center justify-center overflow-hidden bg-gray-50">
         <div
           className="shadow-lg"
           style={{
-            transform: \`scale(\${scale})\`,
+            transform: `scale(${scale})`,
             transformOrigin: 'top left',
             width: canvasSize.width,
             height: canvasSize.height,
             backgroundColor: bgColor,
-            border: \`\${border.width}px solid \${border.color}\`,
-            borderRadius: \`\${border.radius}px\`,
+            border: `${border.width}px solid ${border.color}`,
+            borderRadius: `${border.radius}px`,
             padding: 20,
             boxSizing: 'border-box',
             display: 'flex',
@@ -84,7 +85,6 @@ function App() {
         </div>
       </main>
 
-      {/* Sağ ayar paneli */}
       <aside className="w-64 bg-white shadow-inner p-5 border-l">
         {tab === 'background' && (
           <>
@@ -92,7 +92,6 @@ function App() {
             <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="w-full h-10" />
           </>
         )}
-
         {tab === 'text' && (
           <>
             <label className="block mb-1 font-semibold">Metin</label>
@@ -103,14 +102,12 @@ function App() {
             <input type="color" value={fontColor} onChange={e => setFontColor(e.target.value)} className="w-full h-10" />
           </>
         )}
-
         {tab === 'logo' && (
           <>
             <label className="block mb-1 font-semibold">Logo</label>
             <input type="file" accept="image/*" onChange={e => setLogo(URL.createObjectURL(e.target.files[0]))} />
           </>
         )}
-
         {tab === 'frame' && (
           <>
             <label className="block mb-1 font-semibold">Çerçeve Rengi</label>
@@ -121,12 +118,11 @@ function App() {
             <input type="number" value={border.radius} onChange={e => setBorder({ ...border, radius: Number(e.target.value) })} className="w-full border rounded px-2 py-1" />
           </>
         )}
-
         {tab === 'size' && (
           <>
             <label className="block mb-1 font-semibold">Tuval Boyutu</label>
             <select
-              value={\`\${canvasSize.width}x\${canvasSize.height}\`}
+              value={`${canvasSize.width}x${canvasSize.height}`}
               onChange={e => {
                 const [w, h] = e.target.value.split('x').map(Number);
                 setCanvasSize({ width: w, height: h });
