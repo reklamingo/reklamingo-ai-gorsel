@@ -56,12 +56,14 @@ function App() {
             <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} />
           </>
         )}
+
         {bgType === 'gradient' && (
           <>
             <label>Gradyan:</label>
             <input type="text" value={bgGradient} onChange={e => setBgGradient(e.target.value)} />
           </>
         )}
+
         {bgType === 'image' && (
           <>
             <label>Görsel Yükle:</label>
@@ -124,3 +126,7 @@ function App() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default App;
