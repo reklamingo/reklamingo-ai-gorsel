@@ -24,6 +24,8 @@ function App() {
     });
   };
 
+  const scaleFactor = Math.min(1, 600 / canvasSize.height);
+
   const TabButton = ({ id, icon: Icon, label }) => (
     <button
       onClick={() => setTab(id)}
@@ -36,7 +38,7 @@ function App() {
   );
 
   return (
-    <div className="flex h-screen w-screen bg-gray-100">
+    <div className="flex h-screen w-screen bg-gray-100 overflow-hidden">
       <aside className="w-64 bg-gray-50 shadow-md p-4 flex flex-col gap-2">
         <TabButton id="background" icon={Paintbrush} label="Arka Plan" />
         <TabButton id="text" icon={Type} label="Metin" />
@@ -48,31 +50,46 @@ function App() {
 
       <main className="flex-1 flex items-center justify-center bg-gray-200">
         <div
-          ref={canvasRef}
+          className="canvas-wrapper"
           style={{
+            transform: `scale(${scaleFactor})`,
+            transformOrigin: 'top left',
             width: canvasSize.width,
             height: canvasSize.height,
-            backgroundColor: bgColor,
-            border: `${border.width}px solid ${border.color}`,
-            borderRadius: `${border.radius}px`,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            fontSize,
-            color: fontColor,
-            fontFamily: 'Quicksand',
-            position: 'relative',
-            overflow: 'hidden',
+            justifyContent: 'center'
           }}
         >
-          {text}
-          {logo && (
-            <img
-              src={logo}
-              alt="logo"
-              style={{ position: 'absolute', bottom: 10, right: 10, height: 60 }}
-            />
-          )}
+          <div
+            ref={canvasRef}
+            style={{
+              width: canvasSize.width,
+              height: canvasSize.height,
+              backgroundColor: bgColor,
+              border: `${border.width}px solid ${border.color}`,
+              borderRadius: `${border.radius}px`,
+              padding: 20,
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize,
+              color: fontColor,
+              fontFamily: 'Quicksand',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            {text}
+            {logo && (
+              <img
+                src={logo}
+                alt="logo"
+                style={{ position: 'absolute', bottom: 10, right: 10, height: 60 }}
+              />
+            )}
+          </div>
         </div>
       </main>
 
